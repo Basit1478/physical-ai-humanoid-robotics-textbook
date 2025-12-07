@@ -1,0 +1,26 @@
+# Gitignore for Textbook RAG Chatbot Project
+
+# Node.js/TypeScript
+node_modules/
+dist/
+build/
+*.log
+.env*
+.docusaurus/
+.cache/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Universal
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
