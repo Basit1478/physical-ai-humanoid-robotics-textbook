@@ -2,6 +2,8 @@
 
 This repository contains the source code for the Physical AI & Humanoid Robotics textbook, built with Docusaurus.
 
+**Live Site**: [https://basit1478.github.io/physical-ai-humanoid-robotics-textbook/](https://basit1478.github.io/physical-ai-humanoid-robotics-textbook/)
+
 ## About
 
 This textbook provides comprehensive coverage of Physical AI and Humanoid Robotics, designed for advanced STEM learners in capstone AI/robotics programs focusing on embodied intelligence. The content covers the full pipeline from sensing to simulation to action to learning, with a focus on connecting digital intelligence with physical humanoid robots.

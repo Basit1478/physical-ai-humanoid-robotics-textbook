@@ -2,6 +2,8 @@
 
 This is the backend service for the Physical AI & Humanoid Robotics Textbook project, built with FastAPI. It provides APIs for content management, RAG chatbot, authentication, personalization, and translation.
 
+**Live Site**: [https://basit1478.github.io/physical-ai-humanoid-robotics-textbook/](https://basit1478.github.io/physical-ai-humanoid-robotics-textbook/)
+
 ## Features
 
 - **Module Management**: Create, update, and manage textbook modules and chapters
