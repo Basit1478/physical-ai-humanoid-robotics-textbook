@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     # API settings
     api_prefix: str = "/api"
-    allowed_origins: List[str] = ["*"]  # In production, specify exact origins
+    allowed_origins: List[str] = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,https://yourdomain.com").split(",")
 
     # AI/ML settings
     openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")

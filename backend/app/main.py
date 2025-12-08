@@ -5,7 +5,7 @@ import uvicorn
 from typing import Optional
 import os
 
-from routes import modules, chat, auth, personalization, translation, ingestion, agents
+from routes import modules, chat, auth, personalization, translation, ingestion, agents, openai_agents
 from models.database import engine, Base
 from auth.better_auth import get_current_user
 from config import settings
@@ -40,6 +40,7 @@ app.include_router(personalization.router, prefix="/api", tags=["personalization
 app.include_router(translation.router, prefix="/api", tags=["translation"])
 app.include_router(ingestion.router, prefix="/api", tags=["ingestion"])
 app.include_router(agents.router, prefix="/api", tags=["agents"])
+app.include_router(openai_agents.router, prefix="/api", tags=["openai-agents"])
 
 @app.get("/")
 def read_root():

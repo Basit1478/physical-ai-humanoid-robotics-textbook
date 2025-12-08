@@ -119,3 +119,106 @@ def update_learning_preferences(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error updating learning preferences: {str(e)}"
         )
+
+@router.post("/personalization/urdu-mode")
+def enable_urdu_personalization(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db_session)
+):
+    """Enable Urdu personalization mode for the user"""
+    try:
+        # Get existing profile or create new one
+        profile = personalization_service.get_user_profile(db, current_user.id)
+
+        if not profile:
+            # Create a new profile with Urdu preferences
+            profile_data = PersonalizationRequest(
+                education_level="intermediate",
+                field_of_study="robotics",
+                background="general",
+                learning_preferences={
+                    "language_preference": "urdu",
+                    "visual_learner": True,
+                    "hands_on": True
+                }
+            )
+            profile = personalization_service.create_or_update_profile(db, current_user.id, profile_data)
+        else:
+            # Update existing profile to include Urdu preferences
+            learning_prefs = {}
+            if profile.learning_preferences:
+                try:
+                    import json
+                    learning_prefs = json.loads(profile.learning_preferences)
+                except:
+                    pass
+
+            learning_prefs["language_preference"] = "urdu"
+            learning_prefs["visual_learner"] = True
+            learning_prefs["hands_on"] = True
+
+            profile.learning_preferences = str(learning_prefs)
+            profile.field_of_study = profile.field_of_study or "robotics"
+            profile.education_level = profile.education_level or "intermediate"
+            db.commit()
+            db.refresh(profile)
+
+        return {
+            "message": "Urdu personalization mode enabled successfully",
+            "profile": {
+                "id": profile.id,
+                "user_id": profile.user_id,
+                "name": getattr(profile, 'name', None),
+                "education_level": profile.education_level,
+                "field_of_study": profile.field_of_study,
+                "background": profile.background,
+                "language_preference": "urdu"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error enabling Urdu personalization: {str(e)}"
+        )
+
+@router.get("/personalization/urdu-status")
+def get_urdu_personalization_status(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db_session)
+):
+    """Get the current Urdu personalization status for the user"""
+    try:
+        profile = personalization_service.get_user_profile(db, current_user.id)
+
+        if not profile:
+            return {
+                "urdu_mode_enabled": False,
+                "message": "No profile found. Create a profile to enable Urdu personalization."
+            }
+
+        # Check if Urdu preference is set
+        is_urdu_enabled = False
+        if profile.learning_preferences:
+            try:
+                import json
+                prefs = json.loads(profile.learning_preferences)
+                is_urdu_enabled = prefs.get("language_preference") == "urdu"
+            except:
+                pass
+
+        return {
+            "urdu_mode_enabled": is_urdu_enabled,
+            "profile": {
+                "id": profile.id,
+                "user_id": profile.user_id,
+                "name": getattr(profile, 'name', None),
+                "education_level": profile.education_level,
+                "field_of_study": profile.field_of_study,
+                "background": profile.background
+            }
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting Urdu personalization status: {str(e)}"
+        )
