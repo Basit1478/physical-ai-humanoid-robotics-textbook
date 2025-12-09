@@ -208,3 +208,72 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+- Backend Specification — Full Prompt (FastAPI + Gemini Agents + Qdrant + Auth)
+
+You are the Backend Engineer.  
+Your task is to generate the ENTIRE backend for my textbook project in FastAPI.  
+This backend will connect with a Docusaurus frontend.  
+Follow ALL instructions exactly. DO NOT add any extra features.
+
+---
+
+# 🔥 0. GLOBAL RULES (APPLY TO EVERYTHING)
+
+- Backend language: **Python (FastAPI)**
+- LLM provider: **Gemini**  
+  - MUST use:  
+    - **OpenAI Agents SDK with GeminiModel** OR  
+    - **ChatKit with Gemini configuration**  
+  - MUST NOT import tensorflow or google.generativeai
+- Vector DB: **Qdrant Only**
+- Authentication: **Better-Auth**
+- No SQL, no Neon, no Postgres, no MongoDB, no Redis, no extra DBs.
+- Only **4 API categories** allowed:
+  1. `/auth/**`
+  2. `/rag/**`
+  3. `/translate/**`
+  4. `/personalize/**`
+- No additional endpoints.  
+- No additional folders except the ones defined.
+
+---
+
+# 🔥 1. BACKEND FOLDER STRUCTURE
+
+Create EXACTLY these folders inside **backend**:
+
+backend/
+├── rag-chatbot/ # RAG + Agents SDK/ChatKit + Qdrant
+├── translate-urdu/ # Urdu translation API
+└── personalize/ # Personalization API
+auth/ # Signup + Login using Better-Auth
+
+yaml
+Copy code
+
+NO more folders.  
+NO subservices beyond these.
+
+---
+
+# 🔥 2. AUTH SYSTEM (Better-Auth)
+
+### Requirements:
+- Use **Better-Auth** to generate:
+  - `/auth/signup`
+  - `/auth/login`
+- On signup, ask:
+  - User software background  
+  - User hardware background  
+- Store this background data in:
+  - Local JSON file **OR** Qdrant metadata
+- Return session token or JWT for logged-in user
+
+### Output fields (signup):
+```json
+{
+  "user_id": "...",
+  "software_background": "...",
+  "hardware_background": "...",
+  "token": "..."
+}
