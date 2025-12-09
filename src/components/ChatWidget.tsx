@@ -139,15 +139,17 @@ const ChatWidget = () => {
 
     try {
       // Call backend API to get response
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const BACKEND_URL = process.env.NODE_ENV === 'production'
+        ? 'https://textbook-backend-api.onrender.com'
+        : 'http://localhost:8000';
+      const response = await fetch(`${BACKEND_URL}/rag/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: newInputValue,
-          session_id: sessionId,
-          target_language: selectedLanguage
+          query: newInputValue,
+          top_k: 5
         }),
       });
 
@@ -157,15 +159,10 @@ const ChatWidget = () => {
 
       const data = await response.json();
 
-      // Update session ID if new session was created
-      if (data.session_id && !sessionId) {
-        setSessionId(data.session_id);
-      }
-
       // Add bot response to chat
       const botMessage = {
         id: Date.now() + 1,
-        text: data.response,
+        text: data.answer || data.response || 'No response received',
         sender: 'bot',
         timestamp: new Date().toISOString()
       };
@@ -211,7 +208,10 @@ const ChatWidget = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8000/api/personalization/profile', {
+      const BACKEND_URL = process.env.NODE_ENV === 'production'
+        ? 'https://textbook-backend-api.onrender.com'
+        : 'http://localhost:8000';
+      const response = await fetch(`${BACKEND_URL}/personalize/profile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
