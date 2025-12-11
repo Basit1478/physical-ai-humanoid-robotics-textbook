@@ -2,14 +2,16 @@ services:
   - type: web
     name: textbook-backend
     env: python
-    region: oregon  # or frankfurt for EU
+    region: oregon
+    plan: free
     buildCommand: |
+      cd backend &&
       python -m pip install --upgrade pip &&
-      pip install --only-binary=all -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+      pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.5
+        value: 3.11.0
       - key: GEMINI_API_KEY
         sync: false
       - key: QDRANT_URL
@@ -18,10 +20,10 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "*"
       - key: ENVIRONMENT
         value: production
-    healthCheckPath: /
-    rootDir: backend
-
-# Note: For Qdrant, you would typically use Qdrant Cloud or self-host
-# The QDRANT_URL and QDRANT_API_KEY should point to your Qdrant instance
+    healthCheckPath: /health
