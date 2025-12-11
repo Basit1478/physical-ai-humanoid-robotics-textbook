@@ -72,6 +72,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Interactive Features',
+      items: [
+        'demo'
+      ],
+      collapsed: false,
+    },
+    {
+      type: 'category',
       label: 'Developer Resources',
       items: [
         'integration-guide'

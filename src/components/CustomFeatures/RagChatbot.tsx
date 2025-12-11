@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import styles from './CustomFeatures.module.css';
 import { ragApi } from '@site/src/api';
@@ -13,6 +13,24 @@ const RagChatbot = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [backendStatus, setBackendStatus] = useState('checking');
+
+  // Check backend connection on mount
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const response = await fetch('https://textbook-backend-api.onrender.com/health');
+        if (response.ok) {
+          setBackendStatus('connected');
+        } else {
+          setBackendStatus('error');
+        }
+      } catch (error) {
+        setBackendStatus('error');
+      }
+    };
+    checkBackend();
+  }, []);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -31,10 +49,18 @@ const RagChatbot = () => {
     try {
       // Call the backend RAG API
       const response = await ragApi.chat(inputValue);
+
+      let aiContent = response.answer || 'I received your question but couldn\'t generate a response.';
+
+      // Add source information if available
+      if (response.sources && response.sources.length > 0) {
+        aiContent += '\n\nSources: ' + response.sources.join(', ');
+      }
+
       const aiResponse = {
         id: messages.length + 2,
         sender: 'ai',
-        content: response.answer || 'I received your question but couldn\'t generate a response. Please try again.'
+        content: aiContent
       };
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
@@ -42,7 +68,7 @@ const RagChatbot = () => {
       const errorMessage = {
         id: messages.length + 2,
         sender: 'ai',
-        content: 'Sorry, I encountered an error processing your request. Please try again.'
+        content: '⚠️ Unable to connect to the backend. The service may be starting up (this can take 30-60 seconds on Render free tier). Please try again in a moment.'
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -61,6 +87,14 @@ const RagChatbot = () => {
     <div className={styles.customFeature}>
       <h3>AI Assistant (RAG Chatbot)</h3>
       <p>Ask questions about the Physical AI & Humanoid Robotics textbook content:</p>
+
+      {/* Backend Status Indicator */}
+      <div style={{ marginBottom: '10px', fontSize: '12px' }}>
+        Backend Status: {' '}
+        {backendStatus === 'checking' && <span style={{color: '#888'}}>⏳ Checking...</span>}
+        {backendStatus === 'connected' && <span style={{color: '#28a745'}}>✅ Connected</span>}
+        {backendStatus === 'error' && <span style={{color: '#dc3545'}}>⚠️ Disconnected (may need 30-60s to wake up)</span>}
+      </div>
 
       <div className={styles.chatContainer}>
         <div className={styles.chatMessages}>
