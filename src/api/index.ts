@@ -19,71 +19,57 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 
 // RAG API functions
 export const ragApi = {
-  // Add a document to the RAG system
-  addDocument: async (content: string) => {
-    return apiCall('/rag/documents', {
-      method: 'POST',
-      body: JSON.stringify({ content }),
-    });
-  },
-
   // Query documents from the RAG system
-  queryDocuments: async (query: string, topK: number = 5) => {
+  queryDocuments: async (query: string) => {
     return apiCall('/rag/query', {
       method: 'POST',
-      body: JSON.stringify({ query, top_k: topK }),
+      body: JSON.stringify({
+        question: query,
+        user_id: 'anonymous' // In a real app, this would be the actual user ID
+      }),
     });
   },
 
   // Chat with the RAG system
-  chat: async (query: string, topK: number = 5) => {
-    return apiCall('/rag/chat', {
+  chat: async (query: string) => {
+    return apiCall('/rag/query', {
       method: 'POST',
-      body: JSON.stringify({ query, top_k: topK }),
+      body: JSON.stringify({
+        question: query,
+        user_id: 'anonymous' // In a real app, this would be the actual user ID
+      }),
     });
   },
 };
 
 // Translation API functions
 export const translateApi = {
-  // Translate text
-  translate: async (text: string, sourceLang: string = 'en', targetLang: string = 'ur') => {
-    return apiCall('/translate/translate', {
+  // Translate chapter content
+  translateChapter: async (content: string, chapterId: string) => {
+    return apiCall('/translate/chapter', {
       method: 'POST',
-      body: JSON.stringify({ text, source_lang: sourceLang, target_lang: targetLang }),
-    });
-  },
-
-  // Translate to Urdu specifically
-  translateToUrdu: async (text: string) => {
-    return apiCall(`/translate/urdu?text=${encodeURIComponent(text)}`, {
-      method: 'POST',
+      body: JSON.stringify({
+        content: content,
+        chapter_id: chapterId,
+        user_id: 'anonymous', // In a real app, this would be the actual user ID
+        target_language: 'ur'
+      }),
     });
   },
 };
 
 // Personalization API functions
 export const personalizeApi = {
-  // Set user preferences
-  setPreferences: async (preferences: any) => {
-    return apiCall('/personalize/preferences', {
+  // Personalize chapter content
+  personalizeChapter: async (content: string, chapterId: string, userBackground: any) => {
+    return apiCall('/personalize/chapter', {
       method: 'POST',
-      body: JSON.stringify(preferences),
-    });
-  },
-
-  // Personalize content
-  personalizeContent: async (content: string, userId: string) => {
-    return apiCall('/personalize/content', {
-      method: 'POST',
-      body: JSON.stringify({ content, user_id: userId, content_type: 'text' }),
-    });
-  },
-
-  // Get user profile
-  getUserProfile: async (userId: string) => {
-    return apiCall(`/personalize/profile/${userId}`, {
-      method: 'GET',
+      body: JSON.stringify({
+        original_content: content,
+        chapter_id: chapterId,
+        user_id: 'anonymous', // In a real app, this would be the actual user ID
+        user_background: userBackground || {}
+      }),
     });
   },
 };
@@ -91,18 +77,24 @@ export const personalizeApi = {
 // Authentication API functions
 export const authApi = {
   // Signup
-  signup: async (userData: any) => {
+  signup: async (email: string, password: string, fullName: string, softwareBackground: string, hardwareBackground: string) => {
     return apiCall('/auth/signup', {
       method: 'POST',
-      body: JSON.stringify(userData),
+      body: JSON.stringify({
+        email,
+        password,
+        full_name: fullName,
+        software_background: softwareBackground,
+        hardware_background: hardwareBackground
+      }),
     });
   },
 
   // Login
-  login: async (loginData: any) => {
+  login: async (email: string, password: string) => {
     return apiCall('/auth/login', {
       method: 'POST',
-      body: JSON.stringify(loginData),
+      body: JSON.stringify({ email, password }),
     });
   },
 };

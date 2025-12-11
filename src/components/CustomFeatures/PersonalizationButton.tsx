@@ -21,15 +21,13 @@ const PersonalizationButton = () => {
         // For now, we'll use a placeholder user ID
         const userId = localStorage.getItem('userId') || `user_${Date.now()}`;
         if (userId) {
-          const userProfile = await personalizeApi.getUserProfile(userId);
-          if (userProfile) {
+          // For now, just check if we can get user preferences from localStorage
+          // since the backend doesn't have a specific endpoint for getting user profile
+          const savedProfile = localStorage.getItem('userProfile');
+          if (savedProfile) {
+            const profileData = JSON.parse(savedProfile);
             setProfileExists(true);
-            // Update profile state based on the retrieved profile
-            setProfile({
-              education_level: userProfile.level || 'intermediate',
-              field_of_study: userProfile.interests?.[0] || 'robotics',
-              background: userProfile.additional_preferences?.background || ''
-            });
+            setProfile(profileData);
           }
         }
       } catch (error) {
@@ -45,21 +43,16 @@ const PersonalizationButton = () => {
     setIsLoading(true);
 
     try {
-      // Prepare user preferences data for the API
-      const userPreferences = {
-        user_id: `user_${Date.now()}`, // In a real app, this would come from auth
-        interests: [profile.field_of_study],
-        level: profile.education_level,
-        learning_style: 'visual', // Default value
-        preferred_language: 'en',
-        additional_preferences: {
-          background: profile.background,
-          field_of_study: profile.field_of_study
-        }
-      };
+      // Store user profile in localStorage for now
+      // In a real app, we would send this to the backend for auth signup
+      localStorage.setItem('userProfile', JSON.stringify(profile));
 
-      // Call the backend personalization API
-      await personalizeApi.setPreferences(userPreferences);
+      // Also store this information when user signs up
+      localStorage.setItem('userBackground', JSON.stringify({
+        software_background: profile.education_level,
+        hardware_background: profile.field_of_study
+      }));
+
       setProfileExists(true);
       setShowModal(false);
       alert('Profile updated successfully!');
@@ -75,22 +68,24 @@ const PersonalizationButton = () => {
     setIsLoading(true);
 
     try {
-      // Prepare quick setup preferences data for the API
-      const quickSetupPreferences = {
-        user_id: `user_${Date.now()}`, // In a real app, this would come from auth
-        interests: ['robotics', 'ai'],
-        level: 'beginner',
-        learning_style: 'visual',
-        preferred_language: 'en',
-        additional_preferences: {
-          background: 'Quick setup user',
-          field_of_study: 'robotics'
-        }
+      // Prepare quick setup profile data
+      const quickSetupProfile = {
+        education_level: 'beginner',
+        field_of_study: 'robotics',
+        background: 'Quick setup user'
       };
 
-      // Call the backend personalization API
-      await personalizeApi.setPreferences(quickSetupPreferences);
+      // Store user profile in localStorage for now
+      localStorage.setItem('userProfile', JSON.stringify(quickSetupProfile));
+
+      // Also store this information when user signs up
+      localStorage.setItem('userBackground', JSON.stringify({
+        software_background: 'beginner',
+        hardware_background: 'robotics'
+      }));
+
       setProfileExists(true);
+      setProfile(quickSetupProfile);
       setShowModal(false);
       alert('Quick setup completed successfully!');
     } catch (error) {
