@@ -19,8 +19,8 @@ rag_router = APIRouter()
 
 # Initialize Qdrant client
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.1Vld8KV9xc7_MQzD_1EnbekB1G8t7sjaj3NNV9pXPNg")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBGyEFjjE4QJO2rCRvFiDZrnHnvkdhknhY")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Initialize Qdrant client
 if QDRANT_API_KEY:

@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 """
-OpenAI Agents SDK configured with Gemini API Key
-API Key: AIzaSyBGyEFjjE4QJO2rCRvFiDZrnHnvkdhknhY
+OpenAI Agents SDK configured with Gemini API
 """
 
 import os
+import time
 from typing import Dict, List, Any
 import requests
 import json
+from dotenv import load_dotenv
 
-# Gemini API Configuration
-GEMINI_API_KEY = "AIzaSyBGyEFjjE4QJO2rCRvFiDZrnHnvkdhknhY"
+# Load environment variables
+load_dotenv()
+
+# Gemini API Configuration - loaded from .env
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
+
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY not found in environment variables")
 
 class OpenAI_Agents_Gemini:
     def __init__(self):
@@ -67,7 +74,7 @@ class OpenAI_Agents_Gemini:
                 return {
                     "id": "chatcmpl-" + gemini_response.get("id", "gemini"),
                     "object": "chat.completion",
-                    "created": int(time.time()) if 'time' in globals() else 0,
+                    "created": int(time.time()),
                     "model": model,
                     "choices": [{
                         "index": 0,

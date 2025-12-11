@@ -5,7 +5,9 @@ import time
 import os
 
 # Gemini API Configuration
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBGyEFjjE4QJO2rCRvFiDZrnHnvkdhknhY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY environment variable is not set. Please set it in your .env file.")
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 
 class OpenAI_Agents_Gemini:

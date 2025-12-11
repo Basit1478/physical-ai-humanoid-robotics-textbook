@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 import jwt
 import json
 import os
@@ -16,22 +16,28 @@ ALGORITHM = "HS256"
 # File to store user data
 USERS_FILE = "users.json"
 
+class UserBackground(BaseModel):
+    software_experience: str
+    programming_languages: List[str]
+    robotics_experience: str
+    hardware_experience: str
+    ai_ml_knowledge: str
+    goals: str
+
 class UserSignupRequest(BaseModel):
-    username: str
     email: str
     password: str
-    software_background: str
-    hardware_background: str
+    full_name: str
+    background: UserBackground
 
 class UserLoginRequest(BaseModel):
-    username: str
+    email: str
     password: str
 
 class UserResponse(BaseModel):
     user_id: str
-    software_background: str
-    hardware_background: str
     token: str
+    profile: dict
 
 def hash_password(password: str) -> str:
     """Hash password using SHA256"""
@@ -60,59 +66,73 @@ def create_jwt_token(user_id: str) -> str:
 @auth_router.post("/signup", response_model=UserResponse)
 async def signup(request: UserSignupRequest):
     users = load_users()
-    
-    # Check if user already exists
-    if request.username in users:
-        raise HTTPException(status_code=400, detail="Username already exists")
-    
+
+    # Check if user already exists by email
+    for user_data in users.values():
+        if user_data["email"] == request.email:
+            raise HTTPException(status_code=400, detail="Email already exists")
+
     # Hash password
     hashed_password = hash_password(request.password)
-    
+
     # Create user
     user_id = f"user_{len(users) + 1:04d}"
-    users[request.username] = {
+    users[user_id] = {
         "user_id": user_id,
         "email": request.email,
+        "full_name": request.full_name,
         "password": hashed_password,
-        "software_background": request.software_background,
-        "hardware_background": request.hardware_background,
+        "background": request.background.dict(),
         "created_at": datetime.utcnow().isoformat()
     }
-    
+
     # Save users
     save_users(users)
-    
+
     # Create JWT token
     token = create_jwt_token(user_id)
-    
+
     return UserResponse(
         user_id=user_id,
-        software_background=request.software_background,
-        hardware_background=request.hardware_background,
-        token=token
+        token=token,
+        profile={
+            "email": request.email,
+            "full_name": request.full_name,
+            "background": request.background.dict()
+        }
     )
 
 @auth_router.post("/login")
 async def login(request: UserLoginRequest):
     users = load_users()
-    
-    # Check if user exists
-    if request.username not in users:
+
+    # Find user by email
+    user = None
+    user_id = None
+    for uid, user_data in users.items():
+        if user_data["email"] == request.email:
+            user = user_data
+            user_id = uid
+            break
+
+    if user is None:
         raise HTTPException(status_code=400, detail="Invalid credentials")
-    
-    user = users[request.username]
+
     hashed_password = hash_password(request.password)
-    
+
     # Check password
     if user["password"] != hashed_password:
         raise HTTPException(status_code=400, detail="Invalid credentials")
-    
+
     # Create JWT token
     token = create_jwt_token(user["user_id"])
-    
+
     return {
         "user_id": user["user_id"],
         "token": token,
-        "software_background": user["software_background"],
-        "hardware_background": user["hardware_background"]
+        "profile": {
+            "email": user["email"],
+            "full_name": user.get("full_name", ""),
+            "background": user.get("background", {})
+        }
     }

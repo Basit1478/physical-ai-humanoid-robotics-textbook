@@ -1,0 +1,1 @@
+from .routes import router as translation_router
