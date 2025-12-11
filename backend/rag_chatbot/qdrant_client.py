@@ -15,7 +15,7 @@ class QdrantService:
         self.collection_name = "book_content"
 
         # Only initialize client if credentials are available
-        if self.url and self.api_key:
+        if self.url and self.api_key and not self.url.startswith("YOUR_") and not self.api_key.startswith("YOUR_"):
             try:
                 self.client = qdrant_client.QdrantClient(
                     url=self.url,
@@ -27,7 +27,7 @@ class QdrantService:
                 logging.warning(f"Could not initialize Qdrant client: {e}")
                 self.client = None
         else:
-            logging.warning("QDRANT_URL or QDRANT_API_KEY not set, Qdrant client disabled")
+            logging.warning("QDRANT_URL or QDRANT_API_KEY not properly set, Qdrant client disabled")
             self.client = None
 
     def _init_collection(self):

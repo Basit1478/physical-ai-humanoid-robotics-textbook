@@ -10,7 +10,7 @@ class GeminiService:
     def __init__(self):
         # Initialize Gemini API
         api_key = os.getenv("GEMINI_API_KEY")
-        if api_key:
+        if api_key and not api_key.startswith("YOUR_"):
             try:
                 genai.configure(api_key=api_key)
                 self.model = genai.GenerativeModel('gemini-pro')
@@ -19,7 +19,7 @@ class GeminiService:
                 logging.warning(f"Could not initialize Gemini client: {e}")
                 self.model = None
         else:
-            logging.warning("GEMINI_API_KEY not set, Gemini client disabled")
+            logging.warning("GEMINI_API_KEY not properly set, Gemini client disabled")
             self.model = None
 
     def generate_response(self, prompt: str) -> str:
