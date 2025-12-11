@@ -70,6 +70,14 @@ const sidebars: SidebarsConfig = {
       ],
       collapsed: true,
     },
+    {
+      type: 'category',
+      label: 'Developer Resources',
+      items: [
+        'integration-guide'
+      ],
+      collapsed: true,
+    },
   ],
 };
 

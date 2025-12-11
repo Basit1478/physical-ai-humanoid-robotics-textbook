@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import CustomFeatures from '../CustomFeatures';
 
 type FeatureItem = {
   title: string;
@@ -11,32 +12,32 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Comprehensive Textbook',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Dive deep into Physical AI and Humanoid Robotics with our comprehensive textbook covering
+        foundational concepts to advanced topics.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Interactive Learning',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Engage with interactive exercises, simulations, and hands-on projects to reinforce your
+        understanding of embodied intelligence.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'AI-Powered Assistance',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Get personalized help from our AI assistant powered by RAG, with Urdu translation and
+        adaptive learning features.
       </>
     ),
   },
@@ -66,6 +67,7 @@ export default function HomepageFeatures(): ReactNode {
           ))}
         </div>
       </div>
+      <CustomFeatures />
     </section>
   );
 }

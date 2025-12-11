@@ -1,6 +1,6 @@
-# Complete Deployment Guide: Backend and Frontend
+# 🚀 Quick Deployment Guide
 
-## Backend Deployment (Railway)
+## Backend → Railway
 
 ### Step 1: Prepare Your Backend for Deployment
 
@@ -44,20 +44,9 @@ Keep this URL handy as you'll need it for the frontend configuration.
 
 ## Frontend Deployment (Netlify/Vercel)
 
-### Step 1: Update Frontend API Configuration
+### Step 1: Add Environment Variable in Vercel
 
-1. In your `my-website/src/api/config.ts` file, update the production URL:
-
-```typescript
-// API Configuration
-const API_BASE_URL = typeof window !== 'undefined'
-  ? window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8001'  // For local development
-    : 'https://your-project-name-production.up.railway.app'  // YOUR RAILWAY BACKEND URL
-  : 'http://localhost:8001';  // For server-side rendering
-```
-
-2. Replace `'https://your-project-name-production.up.railway.app'` with your actual Railway backend URL from Step 3 above.
+Set `NEXT_PUBLIC_API_URL` to your Railway backend URL
 
 ### Step 2: Deploy Frontend to Netlify or Vercel
 

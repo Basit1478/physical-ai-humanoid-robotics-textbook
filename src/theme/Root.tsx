@@ -1,12 +1,17 @@
 import React from 'react';
-import ChatWidget from '@site/src/components/ChatWidget';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 // Root component wrapper to add ChatWidget to all pages
 export default function Root({children}) {
   return (
     <>
       {children}
-      <ChatWidget />
+      <BrowserOnly fallback={<div />}>
+        {() => {
+          const ChatWidget = require('@site/src/components/ChatWidget').default;
+          return <ChatWidget />;
+        }}
+      </BrowserOnly>
     </>
   );
 }

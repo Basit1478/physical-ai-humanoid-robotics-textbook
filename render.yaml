@@ -22,3 +22,6 @@ services:
         value: production
     healthCheckPath: /
     rootDir: backend
+
+# Note: For Qdrant, you would typically use Qdrant Cloud or self-host
+# The QDRANT_URL and QDRANT_API_KEY should point to your Qdrant instance
