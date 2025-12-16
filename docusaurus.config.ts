@@ -176,7 +176,7 @@ const config: Config = {
           return './src/components/Chatbot';
         },
         getClientModules() {
-          return [require.resolve('./src/components/Chatbot/RootWrapper')];
+          return ['./src/components/Chatbot/RootWrapper'];
         },
       };
     },
