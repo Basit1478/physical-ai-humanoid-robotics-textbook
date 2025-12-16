@@ -1,0 +1,20 @@
+What is inverse kinematics?
+Explain robot path planning
+How does PID controller work?
+What are the types of robot actuators?
+Describe forward kinematics
+What is the difference between forward and inverse kinematics?
+Explain how robotic vision systems work
+What are the main components of a robot?
+How do you calibrate a robot arm?
+What is SLAM in robotics?
+Describe the different types of robot joints
+What is the Jacobian matrix in robotics?
+Explain trajectory planning for robots
+What are the safety considerations in robotics?
+How do force and tactile sensors work in robotics?
+What is the difference between holonomic and non-holonomic robots?
+Explain the concept of robot workspace
+What are the applications of mobile robotics?
+How does a robot's power system work?
+What is robot kinematic calibration?

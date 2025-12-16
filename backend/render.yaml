@@ -1,0 +1,35 @@
+services:
+- type: web
+  name: rag-chatbot
+  env: docker
+  region: oregon
+  plan: free
+  branch: main
+  dockerfilePath: backend/rag-chatbot/Dockerfile
+  envVars:
+    - key: GEMINI_API_KEY
+      sync: false
+    - key: QDRANT_URL
+      sync: false
+    - key: QDRANT_API_KEY
+      sync: false
+    - key: QDRANT_COLLECTION_NAME
+      value: documents
+    - key: GEMINI_MODEL
+      value: gemini-1.5-flash
+    - key: RETRIEVAL_TOP_K
+      value: 5
+    - key: RETRIEVAL_THRESHOLD
+      value: 0.5
+    - key: TEMPERATURE
+      value: 0.7
+    - key: MAX_TOKENS
+      value: 1024
+    - key: HOST
+      value: 0.0.0.0
+    - key: PORT
+      value: 8000
+    - key: LOG_LEVEL
+      value: INFO
+    - key: DEBUG
+      value: "False"

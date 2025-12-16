@@ -19,24 +19,33 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 
 // RAG API functions
 export const ragApi = {
-  // Query documents from the RAG system
+  // Query documents from the RAG system (new format)
   queryDocuments: async (query: string) => {
-    return apiCall('/rag/query', {
+    const response = await apiCall('/rag/query', {
       method: 'POST',
       body: JSON.stringify({
         question: query,
-        user_id: 'anonymous' // In a real app, this would be the actual user ID
+        context: null
       }),
     });
+
+    // If response follows new format (success/data/message), return the data part
+    if (response.success !== undefined && response.data) {
+      return response.data;
+    }
+    // Otherwise return the raw response for legacy compatibility
+    return response;
   },
 
-  // Chat with the RAG system
+  // Chat with the RAG system (uses legacy format for frontend compatibility)
   chat: async (query: string) => {
-    return apiCall('/rag/query', {
+    // Use the legacy endpoint that matches the frontend format
+    return apiCall('/rag/chat', {
       method: 'POST',
       body: JSON.stringify({
-        question: query,
-        user_id: 'anonymous' // In a real app, this would be the actual user ID
+        query: query,
+        top_k: 5,
+        user_id: 'anonymous'
       }),
     });
   },
@@ -46,7 +55,7 @@ export const ragApi = {
 export const translateApi = {
   // Translate chapter content
   translateChapter: async (content: string, chapterId: string) => {
-    return apiCall('/translate/chapter', {
+    const response = await apiCall('/translate/chapter', {
       method: 'POST',
       body: JSON.stringify({
         content: content,
@@ -55,6 +64,13 @@ export const translateApi = {
         target_language: 'ur'
       }),
     });
+
+    // If response follows new format (success/data/message), return the data part
+    if (response.success !== undefined && response.data) {
+      return response.data;
+    }
+    // Otherwise return the raw response for legacy compatibility
+    return response;
   },
 };
 
@@ -62,7 +78,7 @@ export const translateApi = {
 export const personalizeApi = {
   // Personalize chapter content
   personalizeChapter: async (content: string, chapterId: string, userBackground: any) => {
-    return apiCall('/personalize/chapter', {
+    const response = await apiCall('/personalize/chapter', {
       method: 'POST',
       body: JSON.stringify({
         original_content: content,
@@ -71,6 +87,13 @@ export const personalizeApi = {
         user_background: userBackground || {}
       }),
     });
+
+    // If response follows new format (success/data/message), return the data part
+    if (response.success !== undefined && response.data) {
+      return response.data;
+    }
+    // Otherwise return the raw response for legacy compatibility
+    return response;
   },
 };
 
@@ -78,7 +101,7 @@ export const personalizeApi = {
 export const authApi = {
   // Signup
   signup: async (email: string, password: string, fullName: string, softwareBackground: string, hardwareBackground: string) => {
-    return apiCall('/auth/signup', {
+    const response = await apiCall('/auth/signup', {
       method: 'POST',
       body: JSON.stringify({
         email,
@@ -88,13 +111,27 @@ export const authApi = {
         hardware_background: hardwareBackground
       }),
     });
+
+    // If response follows new format (success/data/message), return the data part
+    if (response.success !== undefined && response.data) {
+      return response.data;
+    }
+    // Otherwise return the raw response for legacy compatibility
+    return response;
   },
 
   // Login
   login: async (email: string, password: string) => {
-    return apiCall('/auth/login', {
+    const response = await apiCall('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
+
+    // If response follows new format (success/data/message), return the data part
+    if (response.success !== undefined && response.data) {
+      return response.data;
+    }
+    // Otherwise return the raw response for legacy compatibility
+    return response;
   },
 };

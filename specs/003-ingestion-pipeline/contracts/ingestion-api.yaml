@@ -1,0 +1,299 @@
+# API Contract: Ingestion Pipeline
+
+## Overview
+API contract for the backend ingestion pipeline service that crawls Docusaurus website, extracts book content, generates Cohere embeddings, and stores vectors in Qdrant.
+
+## Service Information
+- **Base URL**: `/api/v1/ingestion`
+- **Version**: v1
+- **Content-Type**: `application/json`
+- **Authentication**: None required (internal service)
+
+## Endpoints
+
+### 1. Trigger Ingestion Pipeline
+- **Endpoint**: `POST /api/v1/ingestion/process`
+- **Description**: Starts the full ingestion pipeline to crawl, extract, chunk, embed, and store content
+
+#### Request
+```json
+{
+  "base_url": "https://example-docusaurus-site.com",
+  "include_patterns": ["/docs/**", "/intro/**"],
+  "exclude_patterns": ["/blog/**", "/api/**"],
+  "chunk_size_min": 500,
+  "chunk_size_max": 1200,
+  "chunk_overlap": 100
+}
+```
+
+#### Response - Success (202 Accepted)
+```json
+{
+  "job_id": "uuid-string",
+  "status": "processing",
+  "message": "Ingestion pipeline started successfully",
+  "estimated_duration": "PT5M30S",
+  "created_at": "2025-12-15T10:30:00Z"
+}
+```
+
+#### Response - Validation Error (400 Bad Request)
+```json
+{
+  "error": "validation_error",
+  "message": "Invalid request parameters",
+  "details": [
+    {
+      "field": "base_url",
+      "issue": "Invalid URL format"
+    }
+  ]
+}
+```
+
+#### Response - Processing Error (500 Internal Server Error)
+```json
+{
+  "error": "processing_error",
+  "message": "Failed to start ingestion pipeline",
+  "details": "Connection to external service failed"
+}
+```
+
+### 2. Get Ingestion Job Status
+- **Endpoint**: `GET /api/v1/ingestion/process/{job_id}`
+- **Description**: Retrieves the current status of an ingestion job
+
+#### Response - Success (200 OK)
+```json
+{
+  "job_id": "uuid-string",
+  "status": "processing|completed|failed|cancelled",
+  "progress": {
+    "total_pages": 25,
+    "pages_processed": 18,
+    "pages_failed": 0,
+    "percentage": 72.0
+  },
+  "stats": {
+    "documents_created": 18,
+    "chunks_created": 42,
+    "embeddings_generated": 42,
+    "start_time": "2025-12-15T10:30:00Z",
+    "end_time": null,
+    "duration_seconds": 180
+  },
+  "errors": [],
+  "created_at": "2025-12-15T10:30:00Z",
+  "updated_at": "2025-12-15T10:33:00Z"
+}
+```
+
+#### Response - Not Found (404 Not Found)
+```json
+{
+  "error": "not_found",
+  "message": "Ingestion job not found"
+}
+```
+
+### 3. Cancel Ingestion Job
+- **Endpoint**: `DELETE /api/v1/ingestion/process/{job_id}`
+- **Description**: Cancels a running ingestion job
+
+#### Response - Success (200 OK)
+```json
+{
+  "job_id": "uuid-string",
+  "status": "cancelled",
+  "message": "Ingestion job cancelled successfully"
+}
+```
+
+### 4. List Ingestion Jobs
+- **Endpoint**: `GET /api/v1/ingestion/jobs`
+- **Description**: Lists recent ingestion jobs
+
+#### Query Parameters
+- `status` (optional): Filter by status (processing, completed, failed, cancelled)
+- `limit` (optional): Number of jobs to return (default: 20, max: 100)
+- `offset` (optional): Offset for pagination (default: 0)
+
+#### Response - Success (200 OK)
+```json
+{
+  "jobs": [
+    {
+      "job_id": "uuid-string",
+      "status": "completed",
+      "base_url": "https://example.com",
+      "progress": {
+        "total_pages": 25,
+        "pages_processed": 25,
+        "pages_failed": 0,
+        "percentage": 100.0
+      },
+      "created_at": "2025-12-15T10:30:00Z",
+      "completed_at": "2025-12-15T10:35:00Z"
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```
+
+### 5. Test Configuration
+- **Endpoint**: `POST /api/v1/ingestion/test-config`
+- **Description**: Tests the external service configurations (Cohere, Qdrant)
+
+#### Request
+```json
+{
+  "cohere_api_key": "test-key",
+  "qdrant_url": "https://test-qdrant.cloud",
+  "qdrant_api_key": "test-key"
+}
+```
+
+#### Response - Success (200 OK)
+```json
+{
+  "cohere": {
+    "connected": true,
+    "model_available": true
+  },
+  "qdrant": {
+    "connected": true,
+    "collection_exists": true
+  },
+  "overall_status": "ok"
+}
+```
+
+#### Response - Configuration Error (400 Bad Request)
+```json
+{
+  "cohere": {
+    "connected": false,
+    "error": "Invalid API key"
+  },
+  "qdrant": {
+    "connected": false,
+    "error": "Connection refused"
+  },
+  "overall_status": "error"
+}
+```
+
+### 6. Get Processed Content
+- **Endpoint**: `GET /api/v1/ingestion/content`
+- **Description**: Retrieves information about processed content
+
+#### Query Parameters
+- `url` (optional): Filter by source URL
+- `limit` (optional): Number of items to return (default: 20, max: 100)
+- `offset` (optional): Offset for pagination (default: 0)
+
+#### Response - Success (200 OK)
+```json
+{
+  "content": [
+    {
+      "document_id": "uuid-string",
+      "source_url": "https://example.com/docs/intro",
+      "title": "Introduction to AI Robotics",
+      "chunk_count": 3,
+      "token_count": 2450,
+      "status": "processed",
+      "created_at": "2025-12-15T10:32:00Z"
+    }
+  ],
+  "pagination": {
+    "total": 18,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```
+
+## Error Responses
+
+### Common Error Format
+All error responses follow this format:
+```json
+{
+  "error": "error_code",
+  "message": "Human-readable error message",
+  "details": "Optional detailed error information",
+  "timestamp": "2025-12-15T10:30:00Z"
+}
+```
+
+### Error Codes
+- `validation_error`: Request parameters failed validation
+- `authentication_error`: Authentication required or failed
+- `authorization_error`: Insufficient permissions
+- `not_found`: Requested resource not found
+- `processing_error`: Error during processing
+- `external_service_error`: Error communicating with external service
+- `rate_limit_exceeded`: Rate limit exceeded
+- `configuration_error`: Invalid configuration
+
+## Headers
+
+### Request Headers
+- `Content-Type: application/json` - Required for POST/PUT requests
+- `Accept: application/json` - Expected response format
+
+### Response Headers
+- `Content-Type: application/json` - Response content type
+- `X-Request-ID: uuid` - Unique request identifier for tracing
+
+## Authentication
+This service does not require authentication for internal use. For external access, implement appropriate authentication mechanisms.
+
+## Rate Limiting
+- Default: 10 requests per minute per IP
+- Burst: 20 requests
+- Header: `X-RateLimit-Remaining` indicates remaining requests
+
+## Health Check
+- **Endpoint**: `GET /health`
+- **Response**: 200 OK with status information
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-12-15T10:30:00Z",
+  "version": "1.0.0",
+  "dependencies": {
+    "cohere": "connected",
+    "qdrant": "connected"
+  }
+}
+```
+
+## Examples
+
+### Example 1: Starting an Ingestion Job
+```bash
+curl -X POST http://localhost:8000/api/v1/ingestion/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "base_url": "https://my-docusaurus-site.com",
+    "include_patterns": ["/docs/**"],
+    "chunk_size_min": 500,
+    "chunk_size_max": 1200
+  }'
+```
+
+### Example 2: Checking Job Status
+```bash
+curl -X GET http://localhost:8000/api/v1/ingestion/process/job-uuid-string
+```
+
+## Versioning
+This API follows semantic versioning. Breaking changes will increment the major version number (v1 to v2).

@@ -18,7 +18,7 @@ const config: Config = {
   url: 'https://basit1478.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/physical-ai-humanoid-robotics-textbook/',
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -61,6 +61,9 @@ const config: Config = {
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
+      defaultMode: 'light',
+      disableSwitch: false,
+
     },
     navbar: {
       title: 'Physical AI & Humanoid Robotics',
@@ -156,6 +159,17 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  // Add plugin to include the chatbot on all pages
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        fromExtensions: ['html'],
+        toExtensions: ['html'],
+      },
+    ],
+  ],
 };
 
 export default config;
