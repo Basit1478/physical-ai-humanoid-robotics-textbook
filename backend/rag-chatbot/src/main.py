@@ -2,6 +2,7 @@
 FastAPI application for the RAG Agent service
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import logging
@@ -74,6 +75,15 @@ app = FastAPI(
     title="RAG Agent API",
     description="Retrieval-Augmented Generation Agent using Gemini model",
     version="1.0.0"
+)
+
+# Add CORS middleware to allow frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialize RAG Agent
