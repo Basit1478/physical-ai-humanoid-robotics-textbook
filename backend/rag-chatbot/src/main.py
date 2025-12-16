@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import logging
-from config import settings
+from config.settings import settings
 from .rag_agent import RAGAgent
 
 
