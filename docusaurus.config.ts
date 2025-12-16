@@ -168,18 +168,6 @@ const config: Config = {
         toExtensions: ['html'],
       },
     ],
-    // Custom plugin to add the chatbot to the root
-    async function chatbotPlugin() {
-      return {
-        name: 'docusaurus-chatbot-plugin',
-        getThemePath() {
-          return './src/components/Chatbot';
-        },
-        getClientModules() {
-          return ['./src/components/Chatbot/RootWrapper'];
-        },
-      };
-    },
   ],
 };
 
