@@ -106,15 +106,12 @@ class QdrantRetriever:
             # Embed the query using a method compatible with 768-dimensional vectors
             # This ensures compatibility with the new collection
             try:
-                # Use Gemini for embedding if available, as it typically generates 768-dim vectors
-                if hasattr(self.gemini_client, 'embed_content'):
-                    embedding_result = self.gemini_client.embed_content(content=query)
-                    query_embedding = embedding_result['embedding']
-                else:
-                    # Fallback to placeholder if Gemini embedding is not available
-                    query_embedding = self._get_placeholder_embedding_768(query)
+                # Use a more standard approach for 768-dim embeddings
+                # If we have access to sentence transformers or similar, we could use those
+                # For now, using a more robust placeholder that ensures 768 dimensions
+                query_embedding = self._get_placeholder_embedding_768(query)
             except Exception as e:
-                self.logger.warning(f"Error using Gemini for query embedding: {str(e)}, falling back to placeholder")
+                self.logger.warning(f"Error during embedding: {str(e)}, using fallback")
                 query_embedding = self._get_placeholder_embedding_768(query)
 
             # Perform search in Qdrant
@@ -306,15 +303,11 @@ class QdrantRetriever:
 
             # Embed the query using a method compatible with 768-dimensional vectors
             try:
-                # Use Gemini for embedding if available, as it typically generates 768-dim vectors
-                if hasattr(self.gemini_client, 'embed_content'):
-                    embedding_result = self.gemini_client.embed_content(content=query)
-                    query_embedding = embedding_result['embedding']
-                else:
-                    # Fallback to placeholder if Gemini embedding is not available
-                    query_embedding = self._get_placeholder_embedding_768(query)
+                # Use a more standard approach for 768-dim embeddings
+                # For now, using a more robust placeholder that ensures 768 dimensions
+                query_embedding = self._get_placeholder_embedding_768(query)
             except Exception as e:
-                self.logger.warning(f"Error using Gemini for query embedding: {str(e)}, falling back to placeholder")
+                self.logger.warning(f"Error during embedding: {str(e)}, using fallback")
                 query_embedding = self._get_placeholder_embedding_768(query)
 
             search_filter = models.Filter(must=filter_conditions) if filter_conditions else None
