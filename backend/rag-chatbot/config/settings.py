@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "AIzaSyAEcBCmRFqdXPDUXeeOUg3d8oTcB6Tl4e4")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     COHERE_API_KEY: str = os.getenv ("COHERE_API_KEY","oiLIa9xzWPeCTQRmmszxfGLfO2qjA4JgWkOTKM1r")
-    COHERE_MODEL: str = os.getenv ("COHERE_MODEL","embed-multilingual-v2.0")embed-multilingual-v2.0
+    COHERE_MODEL: str = os.getenv ("COHERE_MODEL","embed-multilingual-v2.0")
 
     # Qdrant configuration
     QDRANT_URL: str = os.getenv("QDRANT_URL", "https://912e150e-53c0-41d5-8bd5-62dc64dc85d0.europe-west3-0.gcp.cloud.qdrant.io:6333")
