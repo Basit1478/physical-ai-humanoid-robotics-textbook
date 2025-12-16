@@ -28,8 +28,8 @@ class ChatbotAPIService {
   private baseUrl: string;
 
   constructor() {
-    // Use environment variable or default to localhost
-    this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+    // Use environment variable or default to deployed backend URL
+    this.baseUrl = process.env.REACT_APP_API_URL || 'https://rag-chatbot-81k7.onrender.com';
   }
 
   async sendMessage(request: ChatRequest): Promise<ChatResponse> {
