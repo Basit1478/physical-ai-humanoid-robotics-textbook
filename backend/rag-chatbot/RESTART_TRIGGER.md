@@ -1,1 +1,0 @@
-Trigger restart after environment variable updates
