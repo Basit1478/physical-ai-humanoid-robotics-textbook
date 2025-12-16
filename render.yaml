@@ -14,17 +14,17 @@ services:
     - key: QDRANT_API_KEY
       sync: false
     - key: QDRANT_COLLECTION_NAME
-      value: documents
+      value: hackathon-book
     - key: GEMINI_MODEL
-      value: gemini-1.5-flash
+      value: gemini-2.5-flash
     - key: RETRIEVAL_TOP_K
       value: 5
     - key: RETRIEVAL_THRESHOLD
-      value: 0.5
+      value: 0.3
     - key: TEMPERATURE
-      value: 0.7
+      value: 0.1
     - key: MAX_TOKENS
-      value: 1024
+      value: 2048
     - key: HOST
       value: 0.0.0.0
     - key: PORT
@@ -32,7 +32,7 @@ services:
     - key: LOG_LEVEL
       value: INFO
     - key: DEBUG
-      value: "False"
+      value: "false"
 
 - type: web
   name: auth-service
