@@ -96,6 +96,52 @@ class GeminiClient:
 
         return "\n".join(formatted_chunks)
 
+    def embed_content(self, content: str) -> Dict[str, List[float]]:
+        """
+        Generate embeddings for the given content using Gemini's embedding model.
+        """
+        if not settings.GEMINI_API_KEY:
+            # Mock response for validation
+            return {'embedding': self._generate_mock_embedding(content)}
+
+        try:
+            # Use the embedding API
+            result = genai.embed_content(
+                model="models/embedding-001",  # Gemini embedding model
+                content=content,
+                task_type="retrieval_query"  # or "retrieval_document", "semantic_similarity", etc.
+            )
+            return result
+        except Exception as e:
+            self.logger.error(f"Error generating embedding with Gemini: {str(e)}")
+            # Return mock embedding as fallback
+            return {'embedding': self._generate_mock_embedding(content)}
+
+    def _generate_mock_embedding(self, content: str) -> List[float]:
+        """
+        Generate a mock embedding for testing purposes.
+        Creates a 768-dimensional vector based on content hash.
+        """
+        import hashlib
+
+        # Create a hash of the content
+        hash_obj = hashlib.sha256(content.encode())
+        hex_dig = hash_obj.hexdigest()
+
+        # Convert hex to a list of floats
+        embedding = []
+        for i in range(0, len(hex_dig), 2):
+            if i + 1 < len(hex_dig):
+                val = int(hex_dig[i:i+2], 16) / 255.0  # Normalize to 0-1
+                embedding.append(val)
+
+        # Pad or truncate to exactly 768 dimensions (typical for many embedding models)
+        while len(embedding) < 768:
+            embedding.append(0.0)
+        embedding = embedding[:768]
+
+        return embedding
+
     def validate_response_against_context(self, response: str, context: str) -> bool:
         """
         Validate that the response is grounded in the provided context.

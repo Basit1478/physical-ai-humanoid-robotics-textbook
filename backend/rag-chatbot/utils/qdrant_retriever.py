@@ -103,23 +103,19 @@ class QdrantRetriever:
         sim_threshold = threshold or settings.RETRIEVAL_THRESHOLD
 
         try:
-            # Embed the query using the same model as the ingestion service
-            # Since we're using Cohere for the ingestion service, we need to use Cohere for queries too
-            # This ensures compatibility between stored vectors and query embeddings
+            # Embed the query using a method compatible with 768-dimensional vectors
+            # This ensures compatibility with the new collection
             try:
-                import cohere
-                if hasattr(self, 'cohere_client') and self.cohere_client:
-                    response = self.cohere_client.embed(
-                        texts=[query],
-                        model=settings.COHERE_MODEL
-                    )
-                    query_embedding = response.embeddings[0]
+                # Use Gemini for embedding if available, as it typically generates 768-dim vectors
+                if hasattr(self.gemini_client, 'embed_content'):
+                    embedding_result = self.gemini_client.embed_content(content=query)
+                    query_embedding = embedding_result['embedding']
                 else:
-                    # Fallback to placeholder if Cohere is not available
-                    query_embedding = self._get_placeholder_embedding(query)
+                    # Fallback to placeholder if Gemini embedding is not available
+                    query_embedding = self._get_placeholder_embedding_768(query)
             except Exception as e:
-                self.logger.warning(f"Error using Cohere for query embedding: {str(e)}, falling back to placeholder")
-                query_embedding = self._get_placeholder_embedding(query)
+                self.logger.warning(f"Error using Gemini for query embedding: {str(e)}, falling back to placeholder")
+                query_embedding = self._get_placeholder_embedding_768(query)
 
             # Perform search in Qdrant
             search_results = self.client.search(
@@ -177,13 +173,41 @@ class QdrantRetriever:
 
         return self.retrieve_chunks(combined_query, top_k, threshold)
 
+    def _get_placeholder_embedding_768(self, text: str) -> List[float]:
+        """
+        Placeholder method to generate 768-dimensional embeddings when proper embedding model is not available.
+        This matches the dimensionality of the new collection.
+        """
+        # This is just a placeholder - in real implementation, you'd use the same
+        # embedding model that was used during ingestion
+        import hashlib
+        import math
+
+        # Create a hash of the text
+        hash_obj = hashlib.sha256(text.encode())
+        hex_dig = hash_obj.hexdigest()
+
+        # Convert hex to a list of floats
+        embedding = []
+        for i in range(0, len(hex_dig), 2):
+            if i + 1 < len(hex_dig):
+                val = int(hex_dig[i:i+2], 16) / 255.0  # Normalize to 0-1
+                embedding.append(val)
+
+        # Pad or truncate to exactly 768 dimensions
+        while len(embedding) < 768:
+            embedding.append(0.0)
+        embedding = embedding[:768]
+
+        return embedding
+
     def _get_placeholder_embedding(self, text: str) -> List[float]:
         """
         Placeholder method to generate embeddings when proper embedding model is not available.
         In a real implementation, you'd use the same embedding model as the ingestion service.
         """
         # This is just a placeholder - in real implementation, you'd use the same
-        # embedding model that was used during ingestion (likely Cohere)
+        # embedding model that was used during ingestion
         # For now, return a simple hash-based embedding
         import hashlib
         hash_obj = hashlib.md5(text.encode())
@@ -280,7 +304,18 @@ class QdrantRetriever:
                         )
                     )
 
-            query_embedding = self._get_placeholder_embedding(query)
+            # Embed the query using a method compatible with 768-dimensional vectors
+            try:
+                # Use Gemini for embedding if available, as it typically generates 768-dim vectors
+                if hasattr(self.gemini_client, 'embed_content'):
+                    embedding_result = self.gemini_client.embed_content(content=query)
+                    query_embedding = embedding_result['embedding']
+                else:
+                    # Fallback to placeholder if Gemini embedding is not available
+                    query_embedding = self._get_placeholder_embedding_768(query)
+            except Exception as e:
+                self.logger.warning(f"Error using Gemini for query embedding: {str(e)}, falling back to placeholder")
+                query_embedding = self._get_placeholder_embedding_768(query)
 
             search_filter = models.Filter(must=filter_conditions) if filter_conditions else None
 
