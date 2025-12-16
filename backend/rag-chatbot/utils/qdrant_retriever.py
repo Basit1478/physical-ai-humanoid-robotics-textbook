@@ -103,14 +103,26 @@ class QdrantRetriever:
         sim_threshold = threshold or settings.RETRIEVAL_THRESHOLD
 
         try:
-            # Embed the query using a method compatible with 768-dimensional vectors
-            # This ensures compatibility with the new collection
+            # Embed the query using Cohere with 768-dimensional vectors for compatibility with the collection
             try:
-                # Use a more standard approach for 768-dim embeddings
-                # For now, using a more robust placeholder that ensures 768 dimensions
-                query_embedding = self._get_placeholder_embedding_768(query)
+                if self.cohere_client:
+                    response = self.cohere_client.embed(
+                        texts=[query],
+                        model=settings.COHERE_MODEL,
+                        input_type="search_query",
+                        embedding_types=["float"]
+                    )
+                    # Extract the embedding - for v3 models with embedding_types, the result is nested
+                    query_embedding = response.embeddings.float[0]
+                    # Ensure it's exactly 768 dimensions (truncate or pad if needed)
+                    while len(query_embedding) < 768:
+                        query_embedding.append(0.0)
+                    query_embedding = query_embedding[:768]
+                else:
+                    # Fallback to placeholder embedding
+                    query_embedding = self._get_placeholder_embedding_768(query)
             except Exception as e:
-                self.logger.warning(f"Error during embedding: {str(e)}, using fallback")
+                self.logger.warning(f"Error using Cohere for query embedding: {str(e)}, falling back to placeholder")
                 query_embedding = self._get_placeholder_embedding_768(query)
 
             # Perform search in Qdrant
@@ -300,13 +312,26 @@ class QdrantRetriever:
                         )
                     )
 
-            # Embed the query using a method compatible with 768-dimensional vectors
+            # Embed the query using Cohere with 768-dimensional vectors for compatibility with the collection
             try:
-                # Use a more standard approach for 768-dim embeddings
-                # For now, using a more robust placeholder that ensures 768 dimensions
-                query_embedding = self._get_placeholder_embedding_768(query)
+                if self.cohere_client:
+                    response = self.cohere_client.embed(
+                        texts=[query],
+                        model=settings.COHERE_MODEL,
+                        input_type="search_query",
+                        embedding_types=["float"]
+                    )
+                    # Extract the embedding - for v3 models with embedding_types, the result is nested
+                    query_embedding = response.embeddings.float[0]
+                    # Ensure it's exactly 768 dimensions (truncate or pad if needed)
+                    while len(query_embedding) < 768:
+                        query_embedding.append(0.0)
+                    query_embedding = query_embedding[:768]
+                else:
+                    # Fallback to placeholder embedding
+                    query_embedding = self._get_placeholder_embedding_768(query)
             except Exception as e:
-                self.logger.warning(f"Error during embedding: {str(e)}, using fallback")
+                self.logger.warning(f"Error using Cohere for query embedding: {str(e)}, falling back to placeholder")
                 query_embedding = self._get_placeholder_embedding_768(query)
 
             search_filter = models.Filter(must=filter_conditions) if filter_conditions else None

@@ -14,7 +14,7 @@ QDRANT_COLLECTION_NAME = os.getenv("QDRANT_COLLECTION_NAME", "textbook_content")
 
 # Cohere settings
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
-COHERE_MODEL = os.getenv("COHERE_MODEL", "embed-multilingual-v2.0")
+COHERE_MODEL = os.getenv("COHERE_MODEL", "embed-multilingual-v3.0")
 
 # Retrieval settings
 TOP_K = int(os.getenv("TOP_K", "5"))

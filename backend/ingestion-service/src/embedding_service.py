@@ -44,10 +44,13 @@ class EmbeddingService:
                     response = self.client.embed(
                         texts=batch,
                         model=self.model,
-                        input_type="search_document"  # Appropriate for document search
+                        input_type="search_document",  # Appropriate for document search
+                        embedding_types=["float"],  # Request specific embedding type for v3 models
+                        dimensions=768  # Specify 768 dimensions for compatibility
                     )
 
-                    embeddings = response.embeddings
+                    # Extract embeddings for v3 models
+                    embeddings = response.embeddings.float
                     all_embeddings.extend(embeddings)
                     self.logger.info(f"Generated embeddings for batch {i//batch_size + 1}/{(len(texts)-1)//batch_size + 1}")
                     break  # Success, break retry loop
@@ -75,8 +78,23 @@ class EmbeddingService:
         Returns:
             Embedding vector (list of floats)
         """
-        embeddings = self.generate_embeddings([text])
-        return embeddings[0] if embeddings else []
+        if not text:
+            return []
+
+        # Use the same approach as batch but for a single text
+        try:
+            response = self.client.embed(
+                texts=[text],
+                model=self.model,
+                input_type="search_document",
+                embedding_types=["float"],
+                dimensions=768  # Specify 768 dimensions for compatibility
+            )
+            embeddings = response.embeddings.float
+            return embeddings[0] if embeddings else []
+        except Exception as e:
+            self.logger.error(f"Error generating embedding for single text: {str(e)}")
+            raise e
 
     def get_model_info(self) -> Dict:
         """

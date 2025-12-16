@@ -4,7 +4,7 @@ Embedding utilities for the retrieval validation service
 import cohere
 import numpy as np
 from typing import List, Union
-from config.settings import COHERE_API_KEY, COHERE_MODEL, RETRIEVAL_TIMEOUT
+from config.settings import COHERE_API_KEY, COHERE_MODEL
 
 
 class EmbeddingService:
@@ -17,21 +17,27 @@ class EmbeddingService:
 
     def embed_query(self, query: str) -> List[float]:
         """
-        Embed a single query using Cohere API.
+        Embed a single query using Cohere API with 768 dimensions.
         """
+        if not query:
+            return []
+
         try:
             response = self.client.embed(
                 texts=[query],
                 model=self.model,
-                input_type="search_query"  # Appropriate for search queries
+                input_type="search_query",  # Appropriate for search queries
+                embedding_types=["float"],  # Request specific embedding type for v3 models
+                dimensions=768  # Specify 768 dimensions for compatibility
             )
-            return response.embeddings[0] if response.embeddings else []
+            # Extract the embedding - for v3 models with embedding_types, the result is nested
+            return response.embeddings.float[0] if response.embeddings.float else []
         except Exception as e:
             raise Exception(f"Error embedding query: {str(e)}")
 
     def embed_queries(self, queries: List[str]) -> List[List[float]]:
         """
-        Embed multiple queries using Cohere API.
+        Embed multiple queries using Cohere API with 768 dimensions.
         """
         if not queries:
             return []
@@ -46,9 +52,12 @@ class EmbeddingService:
                 response = self.client.embed(
                     texts=batch,
                     model=self.model,
-                    input_type="search_query"
+                    input_type="search_query",
+                    embedding_types=["float"],  # Request specific embedding type for v3 models
+                    dimensions=768  # Specify 768 dimensions for compatibility
                 )
-                embeddings = response.embeddings
+                # Extract embeddings for v3 models
+                embeddings = response.embeddings.float
                 all_embeddings.extend(embeddings)
             except Exception as e:
                 raise Exception(f"Error embedding batch {i//batch_size + 1}: {str(e)}")
@@ -83,5 +92,5 @@ class EmbeddingService:
         return {
             'model': self.model,
             'api_provider': 'cohere',
-            'input_type': 'search_query'
+            'dimensions': 768
         }
