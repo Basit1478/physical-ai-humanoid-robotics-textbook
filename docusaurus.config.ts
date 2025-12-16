@@ -170,6 +170,29 @@ const config: Config = {
       },
     ],
   ],
+
+  // Add plugin to include the chatbot on all pages
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        fromExtensions: ['html'],
+        toExtensions: ['html'],
+      },
+    ],
+    // Custom plugin to add the chatbot to the root
+    async function chatbotPlugin() {
+      return {
+        name: 'docusaurus-chatbot-plugin',
+        getThemePath() {
+          return './src/components/Chatbot';
+        },
+        getClientModules() {
+          return [require.resolve('./src/components/Chatbot/RootWrapper')];
+        },
+      };
+    },
+  ],
 };
 
 export default config;
