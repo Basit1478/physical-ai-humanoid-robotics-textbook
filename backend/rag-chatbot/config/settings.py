@@ -8,17 +8,17 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Gemini configuration
-    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "AIzaSyAEcBCmRFqdXPDUXeeOUg3d8oTcB6Tl4e4")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     # Cohere configuration
-    COHERE_API_KEY: str = os.getenv("COHERE_API_KEY", "oiLIa9xzWPeCTQRmmszxfGLfO2qjA4JgWkOTKM1r")
+    COHERE_API_KEY: str = os.getenv("COHERE_API_KEY")
     COHERE_MODEL: str = os.getenv("COHERE_MODEL", "embed-multilingual-v3.0")
 
     # Qdrant configuration
-    QDRANT_URL: str = os.getenv("QDRANT_URL", "https://912e150e-53c0-41d5-8bd5-62dc64dc85d0.europe-west3-0.gcp.cloud.qdrant.io:6333")
-    QDRANT_API_KEY: str = os.getenv("QDRANT_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOlt7ImNvbGxlY3Rpb24iOiJoYWNrYXRob24tYm9vayIsImFjY2VzcyI6InJ3In1dfQ.WmMcvD4eBJE0zlPKdHnnY4aJcbE5XrtfozOHd5VJIys")
-    QDRANT_COLLECTION_NAME: str = os.getenv("QDRANT_COLLECTION_NAME", "hackathon-book")
+    QDRANT_URL: str = os.getenv("QDRANT_URL")
+    QDRANT_API_KEY: str = os.getenv("QDRANT_API_KEY")
+    QDRANT_COLLECTION_NAME: str = os.getenv("QDRANT_COLLECTION_NAME", "textbook_content")
 
     # Agent configuration
     AGENT_SYSTEM_INSTRUCTIONS: str = os.getenv(
@@ -64,6 +64,9 @@ def validate_required_settings():
 
     if not settings.QDRANT_URL:
         errors.append("QDRANT_URL environment variable is required")
+
+    if not settings.QDRANT_API_KEY:
+        errors.append("QDRANT_API_KEY environment variable is required")
 
     # Note: COHERE_API_KEY is not required as we have a fallback mechanism
     # The system can work with other embedding methods if Cohere is not available

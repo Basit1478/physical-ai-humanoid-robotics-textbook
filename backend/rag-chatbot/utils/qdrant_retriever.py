@@ -38,6 +38,10 @@ class QdrantRetriever:
             self.client = QdrantClient(url=settings.QDRANT_URL)
 
         self.collection_name = settings.QDRANT_COLLECTION_NAME
+
+        # Ensure the collection exists with the correct configuration
+        self.ensure_collection_exists(vector_size=768)
+
         self.gemini_client = GeminiClient()
 
         # Initialize Cohere client for embedding queries
@@ -245,7 +249,7 @@ class QdrantRetriever:
                 'vector_count': 0,
                 'collection_name': self.collection_name,
                 'config': {
-                    'vector_size': 1024,
+                    'vector_size': 768,
                     'distance': 'cosine'
                 }
             }
@@ -262,7 +266,22 @@ class QdrantRetriever:
             }
         except Exception as e:
             self.logger.error(f"Error getting collection stats: {str(e)}")
-            return {}
+            # Try to ensure collection exists if there's an error
+            self.ensure_collection_exists(vector_size=768)
+            # Return basic info after attempting to create collection
+            try:
+                collection_info = self.client.get_collection(self.collection_name)
+                return {
+                    'vector_count': collection_info.points_count,
+                    'collection_name': self.collection_name,
+                    'config': {
+                        'vector_size': collection_info.config.params.vectors.size,
+                        'distance': collection_info.config.params.vectors.distance
+                    }
+                }
+            except Exception as e2:
+                self.logger.error(f"Error getting collection stats after recreation attempt: {str(e2)}")
+                return {}
 
     def search_with_filters(self, query: str, filters: Dict = None,
                           top_k: Optional[int] = None) -> List[Dict]:
@@ -405,6 +424,64 @@ class QdrantRetriever:
 
         except Exception as e:
             self.logger.error(f"Error storing vector: {str(e)}")
+            return False
+
+    def ensure_collection_exists(self, vector_size: int = 768) -> bool:
+        """
+        Ensure that the Qdrant collection exists with the correct configuration.
+
+        Args:
+            vector_size: Size of the vectors (default 768 for compatibility)
+
+        Returns:
+            Boolean indicating if collection exists/is created successfully
+        """
+        if not self.client:
+            self.logger.error("Cannot ensure collection exists: Qdrant client not initialized")
+            return False
+
+        try:
+            from qdrant_client.http import models
+
+            # Check if collection already exists
+            collections = self.client.get_collections()
+            collection_exists = any(col.name == self.collection_name for col in collections.collections)
+
+            if not collection_exists:
+                # Create collection with 768-dimensional vectors
+                self.client.create_collection(
+                    collection_name=self.collection_name,
+                    vectors_config=models.VectorParams(
+                        size=vector_size,
+                        distance=models.Distance.COSINE
+                    )
+                )
+
+                # Create payload index for efficient filtering
+                self.client.create_payload_index(
+                    collection_name=self.collection_name,
+                    field_name="url",
+                    field_schema=models.PayloadSchemaType.KEYWORD
+                )
+
+                self.logger.info(f"Created Qdrant collection '{self.collection_name}' with {vector_size}-dimensional vectors")
+                return True
+            else:
+                # Verify the collection has the correct vector size
+                collection_info = self.client.get_collection(self.collection_name)
+                current_size = collection_info.config.params.vectors.size
+
+                if current_size != vector_size:
+                    self.logger.warning(f"Collection has {current_size}-dimensional vectors, expected {vector_size}")
+                    # Note: In Qdrant, you cannot change vector size after creation
+                    # This would require recreating the collection, which we won't do automatically
+                else:
+                    self.logger.info(f"Qdrant collection '{self.collection_name}' exists with correct {vector_size}-dimensional vectors")
+
+                return True
+
+        except Exception as e:
+            self.logger.error(f"Error ensuring collection exists: {str(e)}")
             return False
 
     def get_vector_count(self) -> int:
