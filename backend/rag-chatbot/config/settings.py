@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     # Gemini configuration
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "AIzaSyAEcBCmRFqdXPDUXeeOUg3d8oTcB6Tl4e4")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    COHERE_API_KEY: str = os.getenv ("COHERE_API_KEY","oiLIa9xzWPeCTQRmmszxfGLfO2qjA4JgWkOTKM1r")
+    COHERE_MODEL: str = os.getenv ("COHERE_MODEL","embed-multilingual-v3.0")
 
     # Cohere configuration
     COHERE_API_KEY: str = os.getenv("COHERE_API_KEY", "")
