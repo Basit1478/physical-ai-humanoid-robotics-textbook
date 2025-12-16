@@ -160,18 +160,6 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
 
-  // Add plugin to include the chatbot on all pages
-  plugins: [
-    [
-      '@docusaurus/plugin-client-redirects',
-      {
-        fromExtensions: ['html'],
-        toExtensions: ['html'],
-      },
-    ],
-  ],
-
-  // Add plugin to include the chatbot on all pages
   plugins: [
     [
       '@docusaurus/plugin-client-redirects',
