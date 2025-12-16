@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import logging
+import asyncio
 from config.settings import settings
 from .rag_agent import RAGAgent
 
@@ -41,6 +42,31 @@ class HealthResponse(BaseModel):
     status: str
     timestamp: str
     service_info: Dict
+
+
+class IngestDocumentRequest(BaseModel):
+    text: str
+    title: str
+    url: str
+    metadata: Optional[Dict] = {}
+
+
+class IngestDocumentResponse(BaseModel):
+    status: str
+    document_id: str
+    message: str
+
+
+class IngestUrlRequest(BaseModel):
+    url: str
+    recursive: bool = False
+    max_pages: int = 10
+
+
+class IngestUrlResponse(BaseModel):
+    status: str
+    documents_processed: int
+    message: str
 
 
 # Initialize FastAPI app
@@ -234,6 +260,90 @@ async def stats_endpoint():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting stats: {str(e)}")
+
+
+# Add ingestion endpoints
+@app.post("/ingest/document", response_model=IngestDocumentResponse)
+async def ingest_document_endpoint(request: IngestDocumentRequest):
+    """
+    Endpoint to ingest a single document into the knowledge base.
+
+    - **text**: The content of the document
+    - **title**: Title of the document
+    - **url**: URL or identifier for the document
+    - **metadata**: Additional metadata for the document
+    """
+    try:
+        logger = get_logger()
+        logger.info(
+            "ingest_document_endpoint_called",
+            title=request.title,
+            url=request.url
+        )
+
+        # Use the RAG agent to handle document ingestion
+        result = await rag_agent.ingest_single_document(
+            text=request.text,
+            title=request.title,
+            url=request.url,
+            metadata=request.metadata
+        )
+
+        return IngestDocumentResponse(**result)
+
+    except Exception as e:
+        logger = get_logger()
+        logger.error("ingest_document_error", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Error ingesting document: {str(e)}")
+
+
+@app.post("/ingest/url", response_model=IngestUrlResponse)
+async def ingest_url_endpoint(request: IngestUrlRequest, background_tasks: BackgroundTasks):
+    """
+    Endpoint to ingest content from a URL into the knowledge base.
+
+    - **url**: The URL to crawl and ingest
+    - **recursive**: Whether to crawl recursively (default: false)
+    - **max_pages**: Maximum number of pages to crawl (default: 10)
+    """
+    try:
+        logger = get_logger()
+        logger.info(
+            "ingest_url_endpoint_called",
+            url=request.url,
+            recursive=request.recursive,
+            max_pages=request.max_pages
+        )
+
+        # Use the RAG agent to handle URL ingestion
+        result = await rag_agent.ingest_from_url(
+            url=request.url,
+            recursive=request.recursive,
+            max_pages=request.max_pages
+        )
+
+        return IngestUrlResponse(**result)
+
+    except Exception as e:
+        logger = get_logger()
+        logger.error("ingest_url_error", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Error ingesting from URL: {str(e)}")
+
+
+@app.get("/ingestion/status")
+async def ingestion_status_endpoint():
+    """
+    Get the current status of the ingestion system.
+    """
+    try:
+        service_info = rag_agent.get_service_info()
+        return {
+            "status": "ready",
+            "ingestion_info": service_info.get('ingestion_info', {}),
+            "collection_stats": service_info.get('collection_info', {})
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting ingestion status: {str(e)}")
 
 
 if __name__ == "__main__":

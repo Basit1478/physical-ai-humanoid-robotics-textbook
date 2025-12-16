@@ -366,3 +366,58 @@ class QdrantRetriever:
         except Exception as e:
             self.logger.error(f"Error during filtered search: {str(e)}")
             return []
+
+    def store_single_vector(self, vector_id: str, vector: List[float], payload: Dict) -> bool:
+        """
+        Store a single vector with its payload in Qdrant.
+
+        Args:
+            vector_id: Unique identifier for the vector
+            vector: The embedding vector (list of floats)
+            payload: Metadata to store with the vector
+
+        Returns:
+            Boolean indicating success
+        """
+        if not self.client:
+            # For validation purposes
+            self.logger.warning("Cannot store vector: Qdrant client not initialized")
+            return False
+
+        try:
+            from qdrant_client.http import models
+
+            # Prepare the point
+            point = models.PointStruct(
+                id=vector_id,
+                vector=vector,
+                payload=payload
+            )
+
+            # Upsert the point to Qdrant
+            self.client.upsert(
+                collection_name=self.collection_name,
+                points=[point]
+            )
+
+            self.logger.info(f"Stored vector with ID: {vector_id}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Error storing vector: {str(e)}")
+            return False
+
+    def get_vector_count(self) -> int:
+        """
+        Get the total count of vectors in the collection.
+        """
+        if not self.client:
+            # For validation purposes
+            return 0
+
+        try:
+            collection_info = self.client.get_collection(self.collection_name)
+            return collection_info.points_count
+        except Exception as e:
+            self.logger.error(f"Error getting vector count: {str(e)}")
+            return 0
