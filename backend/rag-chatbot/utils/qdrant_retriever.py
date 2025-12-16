@@ -107,7 +107,6 @@ class QdrantRetriever:
             # This ensures compatibility with the new collection
             try:
                 # Use a more standard approach for 768-dim embeddings
-                # If we have access to sentence transformers or similar, we could use those
                 # For now, using a more robust placeholder that ensures 768 dimensions
                 query_embedding = self._get_placeholder_embedding_768(query)
             except Exception as e:
