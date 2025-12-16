@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # Qdrant configuration
     QDRANT_URL: str = os.getenv("QDRANT_URL")
     QDRANT_API_KEY: str = os.getenv("QDRANT_API_KEY")
-    QDRANT_COLLECTION_NAME: str = os.getenv("QDRANT_COLLECTION_NAME", "textbook_content")
+    QDRANT_COLLECTION_NAME: str = os.getenv("QDRANT_COLLECTION_NAME", "hackathon-book")
 
     # Agent configuration
     AGENT_SYSTEM_INSTRUCTIONS: str = os.getenv(

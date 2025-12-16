@@ -39,6 +39,9 @@ class QdrantRetriever:
 
         self.collection_name = settings.QDRANT_COLLECTION_NAME
 
+        # Initialize logger before using it
+        self.logger = logging.getLogger(__name__)
+
         # Ensure the collection exists with the correct configuration
         self.ensure_collection_exists(vector_size=768)
 
@@ -51,8 +54,6 @@ class QdrantRetriever:
         else:
             self.cohere_client = None
             self.logger.warning("COHERE_API_KEY not set - embedding functionality will be limited")
-
-        self.logger = logging.getLogger(__name__)
 
     def validate_collection_exists(self) -> bool:
         """
