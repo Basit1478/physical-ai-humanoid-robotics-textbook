@@ -207,7 +207,7 @@ class QdrantStorage:
         try:
             collection_info = self.client.get_collection(self.collection_name)
             return {
-                'name': collection_info.config.params.vectors_count,
+                'name': self.collection_name,
                 'vector_count': collection_info.points_count,
                 'config': {
                     'vector_size': collection_info.config.params.vectors.size,

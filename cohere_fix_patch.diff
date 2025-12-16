@@ -1,0 +1,30 @@
+
+diff --git a/backend/rag-chatbot/utils/qdrant_retriever.py b/backend/rag-chatbot/utils/qdrant_retriever.py
+index 1234567..89abcdef 100644
+--- a/backend/rag-chatbot/utils/qdrant_retriever.py
++++ b/backend/rag-chatbot/utils/qdrant_retriever.py
+@@ -90,10 +90,15 @@ class QdrantRetriever:
+             # Embed the query using the same model as the ingestion service
+             # Since we're using Cohere for the ingestion service
+-            query_embedding = self.gemini_client.model.embed_content(
+-                content=query
+-            )['embedding'] if hasattr(self.gemini_client.model, 'embed_content') and self.gemini_client.model else self._get_placeholder_embedding(query)
++            import cohere
++            if hasattr(self, 'cohere_client') and self.cohere_client:
++                response = self.cohere_client.embed(
++                    texts=[query],
++                    model=settings.COHERE_MODEL
++                )
++                query_embedding = response.embeddings[0]
++            else:
++                # Fallback to placeholder if Cohere is not available
++                query_embedding = self._get_placeholder_embedding(query)
+
+@@ -154,6 +154,11 @@ class QdrantRetriever:
+         # Initialize Cohere client in __init__ method
++        # Initialize Cohere client
++        if settings.COHERE_API_KEY:
++            import cohere
++            self.cohere_client = cohere.Client(settings.COHERE_API_KEY)
++        else:
++            self.cohere_client = None

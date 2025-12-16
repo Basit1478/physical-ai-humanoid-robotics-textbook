@@ -33,6 +33,10 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "100"))
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 COHERE_MODEL = os.getenv("COHERE_MODEL", "embed-multilingual-v2.0")
 
+# Google Gemini settings
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+
 # Qdrant settings
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")

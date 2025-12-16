@@ -1,4 +1,4 @@
-import { ChatMessage } from './Chatbot';
+import  ChatMessage  from './Chatbot';
 
 export interface ChatRequest {
   query_text: string;

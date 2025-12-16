@@ -79,6 +79,10 @@ const config: Config = {
           label: 'Textbook',
         },
         {
+          type: 'color-mode',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/basit1478/physical-ai-humanoid-robotics-textbook',
           label: 'GitHub',
           position: 'right',

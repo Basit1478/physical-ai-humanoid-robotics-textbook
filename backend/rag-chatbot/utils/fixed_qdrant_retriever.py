@@ -1,12 +1,12 @@
 """
-Qdrant retriever for the RAG Agent service
+Fixed Qdrant retriever using Cohere embeddings for the RAG Agent service
 """
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from typing import List, Dict, Optional
 import logging
+import cohere
 from config.settings import settings
-from .gemini_client import GeminiClient
 
 
 class QdrantRetriever:
@@ -16,15 +16,13 @@ class QdrantRetriever:
             # In production, this should be handled by validate_required_settings()
             self.client = None
             self.collection_name = settings.QDRANT_COLLECTION_NAME
-            self.gemini_client = GeminiClient()
+            self.logger = logging.getLogger(__name__)
 
             # Initialize Cohere client for validation
             if settings.COHERE_API_KEY:
-                import cohere
                 self.cohere_client = cohere.Client(settings.COHERE_API_KEY)
             else:
                 self.cohere_client = None
-            self.logger = logging.getLogger(__name__)
             return
 
         # Initialize Qdrant client
@@ -38,11 +36,9 @@ class QdrantRetriever:
             self.client = QdrantClient(url=settings.QDRANT_URL)
 
         self.collection_name = settings.QDRANT_COLLECTION_NAME
-        self.gemini_client = GeminiClient()
 
-        # Initialize Cohere client for embedding queries
+        # Initialize Cohere client
         if settings.COHERE_API_KEY:
-            import cohere
             self.cohere_client = cohere.Client(settings.COHERE_API_KEY)
         else:
             self.cohere_client = None
@@ -68,15 +64,7 @@ class QdrantRetriever:
 
     def retrieve_chunks(self, query: str, top_k: Optional[int] = None, threshold: Optional[float] = None) -> List[Dict]:
         """
-        Retrieve relevant chunks from Qdrant based on the query.
-
-        Args:
-            query: The query string
-            top_k: Number of results to retrieve (uses default if None)
-            threshold: Minimum similarity threshold (uses default if None)
-
-        Returns:
-            List of retrieved chunks with text, metadata, and similarity scores
+        Retrieve relevant chunks from Qdrant based on the query using Cohere embeddings.
         """
         if not query.strip():
             return []
@@ -103,23 +91,17 @@ class QdrantRetriever:
         sim_threshold = threshold or settings.RETRIEVAL_THRESHOLD
 
         try:
-            # Embed the query using the same model as the ingestion service
-            # Since we're using Cohere for the ingestion service, we need to use Cohere for queries too
-            # This ensures compatibility between stored vectors and query embeddings
-            try:
-                import cohere
-                if hasattr(self, 'cohere_client') and self.cohere_client:
-                    response = self.cohere_client.embed(
-                        texts=[query],
-                        model=settings.COHERE_MODEL
-                    )
-                    query_embedding = response.embeddings[0]
-                else:
-                    # Fallback to placeholder if Cohere is not available
-                    query_embedding = self._get_placeholder_embedding(query)
-            except Exception as e:
-                self.logger.warning(f"Error using Cohere for query embedding: {str(e)}, falling back to placeholder")
-                query_embedding = self._get_placeholder_embedding(query)
+            # Embed the query using Cohere - this matches the ingestion service approach
+            if not self.cohere_client:
+                raise Exception("Cohere client not initialized - COHERE_API_KEY required")
+
+            # Generate embedding for the query using Cohere
+            response = self.cohere_client.embed(
+                texts=[query],
+                model=settings.COHERE_MODEL  # Use the same model as during ingestion
+            )
+
+            query_embedding = response.embeddings[0]  # Get the first embedding
 
             # Perform search in Qdrant
             search_results = self.client.search(
@@ -159,15 +141,6 @@ class QdrantRetriever:
                                          threshold: Optional[float] = None) -> List[Dict]:
         """
         Retrieve relevant chunks using both the query and selected text as context.
-
-        Args:
-            query: The main query string
-            selected_text: Selected text to focus the search
-            top_k: Number of results to retrieve (uses default if None)
-            threshold: Minimum similarity threshold (uses default if None)
-
-        Returns:
-            List of retrieved chunks with text, metadata, and similarity scores
         """
         if not query.strip() and not selected_text.strip():
             return []
@@ -176,32 +149,6 @@ class QdrantRetriever:
         combined_query = f"{query} {selected_text}".strip()
 
         return self.retrieve_chunks(combined_query, top_k, threshold)
-
-    def _get_placeholder_embedding(self, text: str) -> List[float]:
-        """
-        Placeholder method to generate embeddings when proper embedding model is not available.
-        In a real implementation, you'd use the same embedding model as the ingestion service.
-        """
-        # This is just a placeholder - in real implementation, you'd use the same
-        # embedding model that was used during ingestion (likely Cohere)
-        # For now, return a simple hash-based embedding
-        import hashlib
-        hash_obj = hashlib.md5(text.encode())
-        hex_dig = hash_obj.hexdigest()
-
-        # Convert hex to a list of floats (this is just a placeholder approach)
-        embedding = []
-        for i in range(0, len(hex_dig), 2):
-            if i + 1 < len(hex_dig):
-                val = int(hex_dig[i:i+2], 16) / 255.0  # Normalize to 0-1
-                embedding.append(val)
-
-        # Pad or truncate to a fixed size (e.g., 128 dimensions)
-        while len(embedding) < 128:
-            embedding.append(0.0)
-        embedding = embedding[:128]
-
-        return embedding
 
     def get_collection_stats(self) -> Dict:
         """
@@ -236,14 +183,6 @@ class QdrantRetriever:
                           top_k: Optional[int] = None) -> List[Dict]:
         """
         Search with additional filters on payload fields.
-
-        Args:
-            query: The search query string
-            filters: Dictionary of filter conditions (e.g., {'url': 'specific_url'})
-            top_k: Number of results to retrieve
-
-        Returns:
-            List of filtered search results
         """
         if not query.strip():
             return []
@@ -280,7 +219,17 @@ class QdrantRetriever:
                         )
                     )
 
-            query_embedding = self._get_placeholder_embedding(query)
+            # Generate embedding for the query using Cohere
+            if not self.cohere_client:
+                raise Exception("Cohere client not initialized - COHERE_API_KEY required")
+
+            # Generate embedding for the query using Cohere
+            response = self.cohere_client.embed(
+                texts=[query],
+                model=settings.COHERE_MODEL  # Use the same model as during ingestion
+            )
+
+            query_embedding = response.embeddings[0]  # Get the first embedding
 
             search_filter = models.Filter(must=filter_conditions) if filter_conditions else None
 

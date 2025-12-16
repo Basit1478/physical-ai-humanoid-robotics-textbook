@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 9999; /* Increased z-index to ensure it's on top of all elements */
   font-family: var(--ifm-font-family-base);
 }
 
@@ -20,6 +20,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  z-index: 9999; /* Ensure toggle button is always on top */
 }
 
 .chatbot-toggle-button:hover {
@@ -37,6 +38,25 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   border: 1px solid #e0e0e0;
+  z-index: 9999; /* Ensure chat widget is on top */
+  position: absolute; /* Use absolute positioning to position properly */
+  bottom: 80px; /* Position above the toggle button */
+  right: 0;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .chatbot-header {
@@ -50,7 +70,7 @@
 
 .chatbot-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px; /* Reduced from 16px */
   font-weight: 600;
 }
 
@@ -58,10 +78,10 @@
   background: none;
   border: none;
   color: white;
-  font-size: 24px;
+  font-size: 20px; /* Reduced from 24px */
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 26px; /* Reduced from 30px */
+  height: 26px; /* Reduced from 30px */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,7 +105,7 @@
 
 .chatbot-welcome-message {
   color: #6b7280;
-  font-size: 14px;
+  font-size: 13px; /* Reduced font size */
   text-align: center;
   padding: 10px 0;
 }
@@ -128,12 +148,12 @@
 }
 
 .message-content {
-  font-size: 14px;
+  font-size: 13px; /* Reduced font size */
   line-height: 1.4;
 }
 
 .message-timestamp {
-  font-size: 10px;
+  font-size: 11px; /* Slightly increased from 10px for better readability */
   color: #9ca3af;
   margin-top: 4px;
   text-align: right;
@@ -175,7 +195,7 @@
 }
 
 .selected-text-indicator {
-  font-size: 12px;
+  font-size: 12px; /* Consistent font size */
   color: #4f8afb;
   margin-bottom: 8px;
   padding: 4px 8px;
@@ -194,7 +214,7 @@
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 13px; /* Reduced font size */
   outline: none;
   transition: border-color 0.2s;
 }
