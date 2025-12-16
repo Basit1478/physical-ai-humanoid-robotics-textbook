@@ -168,6 +168,15 @@ const config: Config = {
         toExtensions: ['html'],
       },
     ],
+    // Custom plugin to add the chatbot to all pages
+    async function chatbotPlugin(context, options) {
+      return {
+        name: 'docusaurus-chatbot-plugin',
+        getClientModules() {
+          return [require.resolve('./src/components/Chatbot/RootWrapper')];
+        },
+      };
+    },
   ],
 };
 
