@@ -116,7 +116,7 @@ const Chatbot: React.FC = () => {
       {/* Chatbot widget toggle button */}
       {!isOpen && (
         <button className="chatbot-toggle-button" onClick={toggleChat}>
-          💬 Ask AI
+          💬
         </button>
       )}
 
