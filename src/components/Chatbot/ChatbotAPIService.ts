@@ -28,20 +28,13 @@ class ChatbotAPIService {
   private baseUrl: string;
 
   constructor() {
-    // Use environment variable or default to deployed backend URL
-    // Check for process.env in Node.js context, otherwise use window object for browser
-    let backendUrl = 'https://rag-chatbot-81k7.onrender.com';
-
-    // Try to get from environment variable if available
-    if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
-      backendUrl = process.env.REACT_APP_API_URL;
-    }
-    // Also check for a global variable that might be set by Docusaurus
-    else if (typeof window !== 'undefined' && (window as any).__BACKEND_API_URL__) {
-      backendUrl = (window as any).__BACKEND_API_URL__;
-    }
-
-    this.baseUrl = backendUrl;
+    // Use a default URL that will be used during SSR and in browser
+    // Docusaurus will replace this at build time or we'll use the default
+    this.baseUrl = typeof window !== 'undefined'
+      ? window.location.origin.includes('localhost')
+        ? 'http://localhost:8000' // For local development
+        : 'https://rag-chatbot-81k7.onrender.com' // For production
+      : 'https://rag-chatbot-81k7.onrender.com'; // Default for SSR
   }
 
   async sendMessage(request: ChatRequest): Promise<ChatResponse> {
