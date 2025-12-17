@@ -266,42 +266,67 @@
 /* Dark mode support (optional) */
 @media (prefers-color-scheme: dark) {
   .chatbot-widget {
-    background-color: #0B141A; /* WhatsApp dark mode background */
+    background-color: #0B141A; /* WhatsApp dark mode background - black */
+    border-color: #2A3942;
   }
 
   .chatbot-messages {
-    background-color: #0B141A;
+    background-color: #0B141A; /* Black background for messages area */
+  }
+
+  .chatbot-header {
+    background-color: #1F2C34; /* Dark teal header */
   }
 
   .user-message {
-    background-color: #005C4B; /* Dark mode green for sent messages */
+    background-color: #005C4B; /* Dark green for sent messages */
     color: #E9EDEF; /* Light text */
   }
 
   .bot-message {
     background-color: #202C33; /* Dark gray for received messages */
-    color: #E9EDEF;
+    color: #E9EDEF; /* Light text */
   }
 
   .message-timestamp {
-    color: #8696A0;
+    color: #8696A0; /* Gray timestamp */
   }
 
   .chatbot-welcome-message {
+    color: #8696A0; /* Gray welcome message */
+  }
+
+  .selected-text-preview {
+    background-color: #1C2C35;
     color: #8696A0;
   }
 
-  .chatbot-input-area {
-    background-color: #202C33;
-  }
-
-  .chatbot-input {
-    background-color: #2A3942;
-    border-color: #2A3942;
+  .selected-text-indicator {
+    background-color: #005C4B;
     color: #E9EDEF;
   }
 
+  .chatbot-input-area {
+    background-color: #1F2C34; /* Dark background for input area */
+    border-top-color: #2A3942;
+  }
+
+  .chatbot-input {
+    background-color: #2A3942; /* Dark input field */
+    border-color: #2A3942;
+    color: #E9EDEF; /* Light text */
+  }
+
   .chatbot-input::placeholder {
-    color: #8696A0;
+    color: #8696A0; /* Gray placeholder */
+  }
+
+  .chatbot-input:focus {
+    border-color: #00A884; /* Lighter green on focus in dark mode */
+    box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.1);
+  }
+
+  .typing-indicator span {
+    background-color: #8696A0;
   }
 }
