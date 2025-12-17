@@ -169,6 +169,10 @@ const config: Config = {
       },
     ],
   ],
+
+  clientModules: [
+    require.resolve('./src/client-modules/index.js'), // Define global variables for the chatbot API
+  ],
 };
 
 export default config;
