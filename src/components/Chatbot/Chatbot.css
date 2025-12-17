@@ -275,7 +275,15 @@
   }
 
   .chatbot-header {
-    background-color: #1F2C34; /* Dark teal header */
+    background-color: #202C33; /* Dark header in dark mode */
+  }
+
+  .chatbot-toggle-button {
+    background-color: #00A884; /* Lighter WhatsApp green in dark mode */
+  }
+
+  .chatbot-toggle-button:hover {
+    background-color: #008F6C; /* Darker on hover */
   }
 
   .user-message {
