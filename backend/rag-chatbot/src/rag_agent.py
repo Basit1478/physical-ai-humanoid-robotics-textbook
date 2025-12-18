@@ -339,9 +339,26 @@ class RAGAgent:
         try:
             self._log_info("ingest_single_document", title=title, url=url)
 
-            # Generate embedding for the text
-            # For now, using the qdrant_retriever's placeholder method since we need to match 768 dimensions
-            embedding = self.qdrant_retriever._get_placeholder_embedding_768(text)
+            # Generate embedding for the text using Cohere to match query embeddings
+            try:
+                import cohere
+                cohere_client = cohere.Client(settings.COHERE_API_KEY)
+                response = cohere_client.embed(
+                    texts=[text],
+                    model=settings.COHERE_MODEL,
+                    input_type="search_document",  # Use search_document for ingestion
+                    embedding_types=["float"]
+                )
+                # Extract the embedding - for v3 models with embedding_types, the result is nested
+                embedding = response.embeddings.float[0]
+                # Ensure it's exactly 768 dimensions (truncate or pad if needed)
+                while len(embedding) < 768:
+                    embedding.append(0.0)
+                embedding = embedding[:768]
+            except Exception as e:
+                self._log_error("cohere_embedding_error", error=str(e), text_preview=text[:100])
+                # Fallback to placeholder embedding if Cohere fails
+                embedding = self.qdrant_retriever._get_placeholder_embedding_768(text)
 
             # Create content hash for idempotent storage
             content_hash = hashlib.md5(text.encode()).hexdigest()
