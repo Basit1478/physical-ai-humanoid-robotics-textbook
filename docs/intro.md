@@ -63,39 +63,3 @@ The textbook is organized into five comprehensive modules with increasing comple
 
 </div>
 </div>
-
-### Learning Outcomes
-
-By completing this textbook, you will be able to:
-- Understand and implement ROS 2-based robotic systems
-- Create and utilize digital twin environments for robotics
-- Integrate AI capabilities with robotic platforms using NVIDIA Isaac
-- Design and implement Vision-Language-Action systems for advanced robotics applications
-- Apply best practices for physical AI and humanoid robotics development
-
-### Target Audience
-
-This textbook is designed for:
-- Advanced undergraduate and graduate students in robotics and AI
-- Engineers working on humanoid robotics projects
-- Researchers in embodied intelligence and physical AI
-- Practitioners implementing AI-robotic systems
-
-### Prerequisites
-
-Readers should have:
-- Basic programming knowledge in Python and/or C++
-- Understanding of fundamental robotics concepts
-- Familiarity with linear algebra and calculus
-- Basic knowledge of machine learning concepts
-
-### How to Use This Textbook
-
-Each chapter includes:
-- Clear learning outcomes
-- Detailed explanations with text-described diagrams
-- Practical examples and implementation workflows
-- Learning outcomes and chapter summaries
-- References to academic sources for further reading
-
-The modules are designed to be studied sequentially, with each building upon the concepts introduced in previous modules, though they can also be studied independently based on your specific interests and needs.
