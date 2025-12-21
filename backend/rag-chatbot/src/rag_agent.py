@@ -356,8 +356,6 @@ class RAGAgent:
                 while len(embedding) < 768:
                     embedding.append(0.0)
                 embedding = embedding[:768]
-                # Add a small delay to respect rate limits (1.5 seconds to stay under 40 calls/min)
-                time.sleep(1.5)
             except Exception as e:
                 self._log_error("cohere_embedding_error", error=str(e), text_preview=text[:100])
                 # Fallback to placeholder embedding if Cohere fails
