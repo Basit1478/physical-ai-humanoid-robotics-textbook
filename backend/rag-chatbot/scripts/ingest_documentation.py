@@ -98,7 +98,7 @@ def get_document_url(file_path: Path) -> str:
     relative_path = file_path.relative_to(docs_root / "docs")
     # Convert to URL format
     url_path = str(relative_path).replace('\\', '/').replace('.md', '')
-    return f"https://basit1478.github.io/docs/{url_path}"
+    return f"https://textbook-frontend-pl6r.onrender.com/docs/{url_path}"
 
 
 async def main():
