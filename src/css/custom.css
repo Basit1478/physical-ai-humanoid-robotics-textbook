@@ -28,3 +28,60 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* Module Cards Styling */
+.module-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.module-card {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-global-radius);
+  padding: 1.5rem;
+  background-color: var(--ifm-card-background-color);
+  box-shadow: var(--ifm-global-shadow-lw);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.module-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+.module-card h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary);
+}
+
+.module-card ul {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.module-card a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: var(--ifm-color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--ifm-global-radius);
+  transition: background-color 0.2s ease;
+}
+
+.module-card a:hover {
+  background-color: var(--ifm-color-primary-dark);
+  color: white;
+}
+
+/* Dark mode adjustments for module cards */
+[data-theme='dark'] .module-card {
+  border-color: var(--ifm-color-emphasis-500);
+}
+
+[data-theme='dark'] .module-card a:hover {
+  background-color: var(--ifm-color-primary-darker);
+}
