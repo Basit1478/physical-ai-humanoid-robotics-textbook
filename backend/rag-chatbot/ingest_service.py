@@ -179,8 +179,8 @@ async def main():
     """Main function to ingest all textbook documentation content."""
     print("Starting textbook content ingestion process...")
 
-    # Get all markdown files from the docs directory
-    docs_dir = Path(__file__).parent.parent / "docs"
+    # Get all markdown files from the docs directory (in project root)
+    docs_dir = Path(__file__).parent.parent.parent / "docs"
 
     if not docs_dir.exists():
         print(f"Docs directory does not exist: {docs_dir}")
