@@ -1,3 +1,4 @@
+/* Header Styles */
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
@@ -18,22 +19,23 @@
   gap: 1rem;
 }
 
+/* Modules Section Styles */
 .modulesSection {
   padding: 4rem 0;
-  background-color: #f9f9f9;
+  background-color: var(--ifm-color-emphasis-100);
 }
 
 .sectionTitle {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #2e8555;
+  color: var(--ifm-color-primary);
 }
 
 .sectionDescription {
   text-align: center;
   margin-bottom: 3rem;
   font-size: 1.2rem;
-  color: #606060;
+  color: var(--ifm-color-emphasis-700);
 }
 
 .modulesGrid {
@@ -44,10 +46,10 @@
 }
 
 .moduleCard {
-  border: 1px solid #ddd;
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 8px;
   padding: 1.5rem;
-  background-color: white;
+  background-color: var(--ifm-background-surface-color);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
@@ -57,13 +59,13 @@
 
 .moduleCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .moduleCard h3 {
   margin-top: 0;
   margin-bottom: 1rem;
-  color: #2e8555;
+  color: var(--ifm-color-primary);
   font-size: 1.4rem;
 }
 
@@ -71,10 +73,12 @@
   padding-left: 1.5rem;
   margin-bottom: 1.5rem;
   flex-grow: 1;
+  color: var(--ifm-font-color-base);
 }
 
 .moduleCard li {
   margin-bottom: 0.5rem;
+  color: var(--ifm-font-color-base);
 }
 
 .buttonContainer {
@@ -83,7 +87,7 @@
   margin-top: auto;
 }
 
-.buttonContainer .button {
+.cardButton {
   display: inline-block;
   padding: 0.75rem 1.5rem;
   text-decoration: none;
@@ -91,6 +95,28 @@
   transition: background-color 0.2s ease;
   text-align: center;
   width: auto;
+  background-color: var(--ifm-color-primary);
+  color: var(--ifm-button-color) !important;
+}
+
+.cardButton:hover {
+  background-color: var(--ifm-color-primary-dark);
+  color: var(--ifm-button-color) !important;
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .moduleCard {
+  border-color: var(--ifm-color-emphasis-600);
+  background-color: var(--ifm-card-background-color);
+}
+
+[data-theme='dark'] .modulesSection {
+  background-color: var(--ifm-background-surface-color);
+}
+
+[data-theme='dark'] .moduleCard ul,
+[data-theme='dark'] .moduleCard li {
+  color: var(--ifm-font-color-base);
 }
 
 @media screen and (max-width: 768px) {

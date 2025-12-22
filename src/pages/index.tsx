@@ -20,7 +20,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            Get Started
+            Read Textbook
           </Link>
         </div>
       </div>
@@ -39,7 +39,7 @@ function ModuleCard({ title, description, url }) {
       </ul>
       <div className={styles.buttonContainer}>
         <Link
-          className="button button--primary"
+          className={styles.cardButton}
           to={url}>
           Learn More
         </Link>

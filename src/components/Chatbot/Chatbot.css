@@ -7,7 +7,7 @@
 }
 
 .chatbot-toggle-button {
-  background-color: #25D366; /* WhatsApp green */
+  background-color: var(--ifm-color-primary);
   color: white;
   border: none;
   border-radius: 50%;
@@ -24,7 +24,7 @@
 }
 
 .chatbot-toggle-button:hover {
-  background-color: #128C7E; /* Darker WhatsApp green */
+  background-color: var(--ifm-color-primary-dark);
   transform: scale(1.05);
 }
 
@@ -33,11 +33,11 @@
   height: 500px;
   display: flex;
   flex-direction: column;
-  background-color: #ECE5DD; /* WhatsApp background - light beige */
+  background-color: var(--ifm-background-surface-color);
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
-  border: 1px solid #d1d1d1;
+  border: 1px solid var(--ifm-color-emphasis-300);
   z-index: 9999;
   position: absolute;
   bottom: 80px;
@@ -60,8 +60,8 @@
 }
 
 .chatbot-header {
-  background-color: #075E54; /* WhatsApp dark teal header */
-  color: white;
+  background-color: var(--ifm-color-primary);
+  color: var(--ifm-button-color);
   padding: 16px;
   display: flex;
   justify-content: space-between;
@@ -77,7 +77,7 @@
 .chatbot-close-button {
   background: none;
   border: none;
-  color: white;
+  color: var(--ifm-button-color);
   font-size: 20px;
   cursor: pointer;
   width: 26px;
@@ -100,29 +100,29 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: #ECE5DD; /* WhatsApp chat background */
+  background-color: var(--ifm-background-surface-color);
 }
 
 .chatbot-welcome-message {
-  color: #667781; /* WhatsApp gray for secondary text */
+  color: var(--ifm-color-emphasis-700);
   font-size: 13px;
   text-align: center;
   padding: 10px 0;
 }
 
 .selected-text-preview {
-  background-color: #FFF4DE; /* Light yellow for selections */
+  background-color: var(--ifm-color-emphasis-100);
   border-radius: 6px;
   padding: 8px;
   margin-top: 10px;
   font-size: 12px;
-  color: #54656F;
+  color: var(--ifm-color-emphasis-700);
 }
 
 .chatbot-message {
   max-width: 80%;
   padding: 10px 14px;
-  border-radius: 8px; /* WhatsApp uses rounded corners */
+  border-radius: 8px;
   position: relative;
   animation: fadeIn 0.3s ease;
   box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
@@ -135,16 +135,16 @@
 
 .user-message {
   align-self: flex-end;
-  background-color: #DCF8C6; /* WhatsApp light green for sent messages */
-  color: #303030; /* Dark text for user messages */
-  border-bottom-right-radius: 2px; /* WhatsApp tail effect */
+  background-color: var(--ifm-color-primary);
+  color: var(--ifm-button-color);
+  border-bottom-right-radius: 2px;
 }
 
 .bot-message {
   align-self: flex-start;
-  background-color: #FFFFFF; /* White for received messages */
-  color: #303030; /* Dark text for readability */
-  border-bottom-left-radius: 2px; /* WhatsApp tail effect */
+  background-color: var(--ifm-color-emphasis-100);
+  color: var(--ifm-font-color-base);
+  border-bottom-left-radius: 2px;
 }
 
 .message-content {
@@ -154,7 +154,7 @@
 
 .message-timestamp {
   font-size: 11px;
-  color: #667781; /* WhatsApp gray for timestamps */
+  color: var(--ifm-color-emphasis-600);
   margin-top: 4px;
   text-align: right;
 }
@@ -169,7 +169,7 @@
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background-color: #8696A0; /* WhatsApp gray for typing indicator */
+  background-color: var(--ifm-color-emphasis-600);
   border-radius: 50%;
   margin: 0 2px;
   animation: typing 1s infinite;
@@ -190,16 +190,16 @@
 
 .chatbot-input-area {
   padding: 12px;
-  background-color: #F0F2F5; /* Light gray input area background */
-  border-top: 1px solid #d1d1d1;
+  background-color: var(--ifm-color-emphasis-100);
+  border-top: 1px solid var(--ifm-color-emphasis-300);
 }
 
 .selected-text-indicator {
   font-size: 12px;
-  color: #075E54; /* WhatsApp teal */
+  color: var(--ifm-color-primary);
   margin-bottom: 8px;
   padding: 4px 8px;
-  background-color: #D1F4CC; /* Light green background */
+  background-color: var(--ifm-color-emphasis-200);
   border-radius: 4px;
   display: inline-block;
 }
@@ -212,22 +212,23 @@
 .chatbot-input {
   flex: 1;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 20px;
   font-size: 13px;
   outline: none;
   transition: border-color 0.2s;
-  background-color: #FFFFFF;
+  background-color: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
 }
 
 .chatbot-input:focus {
-  border-color: #25D366; /* WhatsApp green on focus */
-  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .chatbot-send-button {
-  background-color: #25D366; /* WhatsApp green send button */
-  color: white;
+  background-color: var(--ifm-color-primary);
+  color: var(--ifm-button-color);
   border: none;
   border-radius: 20px;
   padding: 10px 16px;
@@ -238,12 +239,48 @@
 }
 
 .chatbot-send-button:hover:not(:disabled) {
-  background-color: #128C7E; /* Darker green on hover */
+  background-color: var(--ifm-color-primary-dark);
 }
 
 .chatbot-send-button:disabled {
-  background-color: #d1d5db;
+  background-color: var(--ifm-color-emphasis-200);
   cursor: not-allowed;
+  color: var(--ifm-color-emphasis-500);
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .chatbot-toggle-button {
+  background-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .chatbot-toggle-button:hover {
+  background-color: var(--ifm-color-primary-dark);
+}
+
+[data-theme='dark'] .chatbot-header {
+  background-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .user-message {
+  background-color: var(--ifm-color-primary);
+}
+
+[data-theme='dark'] .bot-message {
+  background-color: var(--ifm-color-emphasis-200);
+}
+
+[data-theme='dark'] .selected-text-indicator {
+  background-color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .chatbot-input {
+  background-color: var(--ifm-background-color);
+  border-color: var(--ifm-color-emphasis-500);
+}
+
+[data-theme='dark'] .chatbot-input:focus {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive design */
@@ -260,81 +297,5 @@
 
   .chatbot-message {
     max-width: 90%;
-  }
-}
-
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-  .chatbot-widget {
-    background-color: #0B141A; /* WhatsApp dark mode background - black */
-    border-color: #2A3942;
-  }
-
-  .chatbot-messages {
-    background-color: #0B141A; /* Black background for messages area */
-  }
-
-  .chatbot-header {
-    background-color: #202C33; /* Dark header in dark mode */
-  }
-
-  .chatbot-toggle-button {
-    background-color: #00A884; /* Lighter WhatsApp green in dark mode */
-  }
-
-  .chatbot-toggle-button:hover {
-    background-color: #008F6C; /* Darker on hover */
-  }
-
-  .user-message {
-    background-color: #005C4B; /* Dark green for sent messages */
-    color: #E9EDEF; /* Light text */
-  }
-
-  .bot-message {
-    background-color: #202C33; /* Dark gray for received messages */
-    color: #E9EDEF; /* Light text */
-  }
-
-  .message-timestamp {
-    color: #8696A0; /* Gray timestamp */
-  }
-
-  .chatbot-welcome-message {
-    color: #8696A0; /* Gray welcome message */
-  }
-
-  .selected-text-preview {
-    background-color: #1C2C35;
-    color: #8696A0;
-  }
-
-  .selected-text-indicator {
-    background-color: #005C4B;
-    color: #E9EDEF;
-  }
-
-  .chatbot-input-area {
-    background-color: #1F2C34; /* Dark background for input area */
-    border-top-color: #2A3942;
-  }
-
-  .chatbot-input {
-    background-color: #2A3942; /* Dark input field */
-    border-color: #2A3942;
-    color: #E9EDEF; /* Light text */
-  }
-
-  .chatbot-input::placeholder {
-    color: #8696A0; /* Gray placeholder */
-  }
-
-  .chatbot-input:focus {
-    border-color: #00A884; /* Lighter green on focus in dark mode */
-    box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.1);
-  }
-
-  .typing-indicator span {
-    background-color: #8696A0;
   }
 }
